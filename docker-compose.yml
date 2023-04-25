@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: discord_app
+    image: app
+    build:
+      context: ./app
+    volumes:
+      - ./app/src:/app/src
+    ports:
+      - ${APP_PORTS}
+
+  db:
+    container_name: discord_db
+    image: couchbase:latest
+    ports:
+      - ${COUCHBASE_PORTS}
+    volumes:
+      - ${COUCHBASE_DATA_PATH}:/opt/couchbase/var
+
+  bot:
+    container_name: discord_bot
+    image: bot
+    build:
+      context: ./bot
+      args:
+        - BOT_TOKEN=${BOT_TOKEN}
+    volumes:
+      - ./bot:/bot
+    ports:
+      - ${BOT_PORTS}
