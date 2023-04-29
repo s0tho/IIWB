@@ -1,6 +1,6 @@
 # If I Were a (discord) Bot
 
-**This is a work in progress.** Current objective is to have a all-in-one administration bot connected to a databse and an application for administration and data visualisation purpose.
+**This is a work in progress.** Current objective is to have a all-in-one administration bot connected to a database and an application for administration and data visualisation purpose.
 Techs are: 
 - Python for the bot.
 - React.JS for the app.
