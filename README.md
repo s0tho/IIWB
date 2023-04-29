@@ -8,6 +8,10 @@ Techs are:
 
 ## Getting Started 
 
+```
+cp .env.sample .env
+```
+Fill up or change information as you need. You must also have a [discord bot token](https://discordpy.readthedocs.io/en/stable/discord.html)
 Install docker and docker compose and build the application:
 ```
 docker compose build
