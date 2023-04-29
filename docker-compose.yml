@@ -19,14 +19,14 @@ services:
     volumes:
       - ${COUCHBASE_DATA_PATH}:/opt/couchbase/var
 
-  bot:
-    container_name: discord_bot
-    image: bot
-    build:
-      context: ./bot
-      args:
-        - BOT_TOKEN=${BOT_TOKEN}
-    volumes:
-      - ./bot:/bot
-    ports:
-      - ${BOT_PORTS}
+  # bot:
+  #   container_name: discord_bot
+  #   image: bot
+  #   build:
+  #     context: ./bot
+  #     args:
+  #       - BOT_TOKEN=${BOT_TOKEN}
+  #   volumes:
+  #     - ./bot:/bot
+  #   ports:
+  #     - ${BOT_PORTS}
