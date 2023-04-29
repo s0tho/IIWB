@@ -8,10 +8,16 @@ Techs are:
 
 ## Getting Started 
 
+create your .env file
 ```
 cp .env.sample .env
 ```
-Fill up or change information as you need. You must also have a [discord bot token](https://discordpy.readthedocs.io/en/stable/discord.html)
+Fill up or change information as you need. You must also have a [discord bot token](https://discordpy.readthedocs.io/en/stable/discord.html). Once you have your token, fill up `BOT_TOKEN=` in the .env file.
+
+If you don't change `COUCHBASE_DATA_PATH`, then:
+```
+mkdir volumes/db/data
+```
 Install docker and docker compose and build the application:
 ```
 docker compose build
