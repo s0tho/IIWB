@@ -1,6 +1,8 @@
 from iiwb.client.iiwb import Reverse, __title__, __version__, __codename__, __fullcodename__
 from discord.ext import commands
 from discord.utils import get
+import discord
+from discord import app_commands
 from discord import __version__ as dversion
 import asyncio
 import sys
@@ -24,6 +26,7 @@ class Bot(Reverse):
 		self.getClient().event(self.on_message)
 
 	async def on_ready(self, ctx=None):
+		await self.tree.sync()
 		print(f'Using {__title__} ver.{__version__} aka {__codename__} - Discord.py ver.{dversion}')
 		print(f'Protocol {__fullcodename__}')
 	

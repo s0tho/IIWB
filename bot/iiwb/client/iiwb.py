@@ -1,6 +1,7 @@
 import asyncio
 from discord.ext import commands
 import discord
+from discord import app_commands
 from iiwb.core._models import Server, Message, Context
 from iiwb.core import utils, ReverseLogger
 import random
@@ -18,6 +19,8 @@ class Reverse():
 	def __init__(self, command_prefix, description=None, **kwargs):
 		print('Reverse : {}'.format(kwargs))
 		intents = discord.Intents.all()
+		client = discord.Client(intents=intents)
+		self.tree = app_commands.CommandTree(client)
 		self.client = Server(commands.Bot(command_prefix=command_prefix, description=description, kwargs=kwargs, intents=intents))
 		self.instance = self.getClient()
 		self.cogs = []
@@ -71,6 +74,7 @@ class Reverse():
 		return command
 
 	async def on_ready(self):
+		self.client.sync(guild=discord.Object(id=906604286270656522))
 		print('We have logged in as {0.user}'.format(self.getClient()))
 		
 	async def on_message(self, message):
