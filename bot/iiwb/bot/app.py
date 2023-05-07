@@ -26,6 +26,8 @@ class Bot(Reverse):
 	async def on_ready(self, ctx=None):
 		print(f'Using {__title__} ver.{__version__} aka {__codename__} - Discord.py ver.{dversion}')
 		print(f'Protocol {__fullcodename__}')
+		self.instance.tree.copy_global_to(guild= discord.Object(id=1101948059270791318))
+		await self.instance.tree.sync(guild= discord.Object(id=1101948059270791318))
 	
 	async def run(self, token: str, status: str = "starting"):
 		await super().run(token=token)

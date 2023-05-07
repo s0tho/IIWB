@@ -72,7 +72,6 @@ class Reverse():
 
 	async def on_ready(self):
 		print('We have logged in as {0.user}'.format(self.getClient()))
-		await self.instance.tree.sync(guild= discord.Object(id=1101948059270791318))
 
 	async def on_message(self, message):
 		m = Message(message)
