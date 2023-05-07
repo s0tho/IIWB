@@ -72,17 +72,6 @@ class MoonPhase(commands.Cog):
 		embed.add_field(name=f"", value=f"{name}", inline=True)
 		await ctx.send(embed=embed)
 
-	current = get_phase_today(1) * 100
-
-	print(current)
-	create_moon_art(1, current)
-	current_moon_phase_name(1, current)
-
-	
-	@commands.hybrid_command(name="first_slash")
-	async def first_slash(self, ctx): 
-		await ctx.send("You executed the slash command!") #respond no longer works, so i changed it to send
-
 
 async def setup(bot):
 	await bot.add_cog(MoonPhase(bot))
