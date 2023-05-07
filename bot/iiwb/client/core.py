@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from discord.utils import get
 from iiwb.core._models import Context
@@ -8,17 +9,25 @@ import json
 
 class Core(commands.Cog):
 
-	def __init__(self, bot):
-		self.bot = bot
+	def __init__(self, bot: commands.Bot):
+		self.bot: commands.Bot = bot
 		self.cogs = utils.listCogs().keys()
 		self.defaultCogs = ['reverse.client.default', 'reverse.client.debugger.debugger']
 
-	@commands.command()
-	async def hey(self, ctx):
-		await ctx.send("Hello!")
+	@commands.hybrid_command(
+		name="hey",
+		description="Say hello to the bot",
+		with_app_command=True
+	)
+	async def hey(self, ctx: commands.Context):
+		await ctx.send("Hello! :wave:")
 
-	@commands.command()
-	async def reload(self, ctx, *args):
+	@commands.hybrid_command(
+		name="reload",
+		description="Reload the bot",
+		with_app_command=True
+	)
+	async def reload(self, ctx: commands.Context):
 		ctx = Context(ctx)
 		_kwargs, _args = utils.parse_args(args)
 		data = {}
@@ -42,15 +51,24 @@ class Core(commands.Cog):
 		sys.tracebacklimit = 0
 		raise SystemExit('Restarting The-Reverse')
 
-	@commands.command()
-	async def where(self,ctx):
+	@commands.hybrid_command(
+		name="where",
+		description="Where is the bot",
+		with_app_command=True
+	)
+	async def where(self, ctx: commands.Context):
 		print(self.bot.guilds)
+		await ctx.send("I'm on {} servers".format(len(self.bot.guilds)))
 
-	@commands.command()
-	async def remindme(self, ctx: Context, time: int, message: str):
+	@commands.hybrid_command(
+		name="remindme",
+		description="Remind you of something",
+		with_app_command=True
+	)
+	async def remindme(self, ctx: commands.Context, time: int, message: str):
 		await ctx.send("I will now wait {} seconds.".format(time))
 		await asyncio.sleep(time)
-		await ctx.send("Hey I didn't forget you! ;)\n Here your message : {}".format(message))
+		await ctx.send("Hey I didn't forget you! ;)\n Here your message : {}".format(message), ephemeral=True)
 
 async def setup(bot):
 	await bot.add_cog(Core(bot))
