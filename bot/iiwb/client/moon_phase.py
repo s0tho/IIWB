@@ -56,6 +56,13 @@ class MoonPhase(commands.Cog):
 		index = int(round(phase / 100.0 * 8.0))
 
 		return symbols[index]
+	
+
+	def today_print(self):
+		aujourdhui = datetime.now()
+
+		return f"Date et heure actuelles: {aujourdhui.strftime('%d %b %Y %Hh%M')}"
+
 
 
 	@commands.hybrid_command(
@@ -67,9 +74,9 @@ class MoonPhase(commands.Cog):
 		current = self.get_phase_today() * 100
 		moon = self.create_moon_art(current)
 		name = self.current_moon_phase_name(current)
-		embed = discord.Embed(title = "Moon phase", description = "", color = 0xafdafc)
+		embed = discord.Embed(title = "Moon phase", description = f"{self.today_print()}", color = 0x0060df)
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
-		embed.add_field(name=f"", value=f"{name}", inline=True)
+		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}**", inline=True)
 		await ctx.send(embed=embed)
 
 
