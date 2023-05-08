@@ -26,7 +26,8 @@ class Bot(Reverse):
 		self.getClient().event(self.on_message)
 
 	async def on_ready(self, ctx=None):
-		await self.tree.sync()
+		self.instance.tree.copy_global_to(guild= discord.Object(id=1101948059270791318))
+		await self.instance.tree.sync(guild= discord.Object(id=1101948059270791318))
 		print(f'Using {__title__} ver.{__version__} aka {__codename__} - Discord.py ver.{dversion}')
 		print(f'Protocol {__fullcodename__}')
 	
