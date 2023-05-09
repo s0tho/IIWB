@@ -10,6 +10,7 @@ import sys
 import json
 from datetime import datetime
 import ephem
+import math
 from typing import List, Tuple
 
 class MoonPhase(commands.Cog):
@@ -63,7 +64,27 @@ class MoonPhase(commands.Cog):
 
 		return f"Date et heure actuelles: {aujourdhui.strftime('%d %b %Y %Hh%M')}"
 
+	def get_compass(self, latitude, longitude):
+		# Création de l'objet d'observateur pour les coordonnées données
+		observer = ephem.Observer()
+		observer.lat = latitude
+		observer.lon = longitude
 
+		# Création de l'objet Lune
+		moon = ephem.Moon(observer)
+
+		# Calcul de l'azimut et de l'élévation de la Lune
+		moon_azimuth = moon.az * 180 / math.pi  # conversion en degrés
+		moon_elevation = moon.alt * 180 / math.pi  # conversion en degrés
+
+		# Calcul de la boussole de la Lune (en utilisant l'azimut de la Lune et le nord magnétique)
+		north_mag = 0  # azimut du nord magnétique (en degrés)
+		moon_compass = (moon_azimuth - north_mag + 360) % 360  # boussole de la Lune (en degrés)
+
+		# Affichage du résultat
+		return f"Boussole de la Lune :**{moon_compass}** :arrow_upper_right: degrés  "
+
+	print()
 
 	@commands.hybrid_command(
 		name="moon_phase",
@@ -74,9 +95,10 @@ class MoonPhase(commands.Cog):
 		current = self.get_phase_today() * 100
 		moon = self.create_moon_art(current)
 		name = self.current_moon_phase_name(current)
+		boussole = self.get_compass('49.443383', '1.099273')
 		embed = discord.Embed(title = "Moon phase", description = f"{self.today_print()}", color = 0x0060df)
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
-		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}**", inline=True)
+		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
 		await ctx.send(embed=embed)
 
 
