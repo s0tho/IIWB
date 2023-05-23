@@ -4,6 +4,7 @@ import discord
 from discord import app_commands
 from discord.utils import get
 from iiwb.core._models import Context
+from iiwb.core._service import IIWBGeopy
 from iiwb.core import utils
 import asyncio
 import sys
@@ -19,6 +20,7 @@ class MoonPhase(commands.Cog):
 		self.bot = bot
 		self.cogs = utils.listCogs().keys()
 		self.defaultCogs = ['reverse.client.default', 'reverse.client.debugger.debugger']
+		self.geobase = IIWBGeopy()
 
 	def create_moon_art(self, phase):
 		# Define moon symbols for each phase
@@ -100,6 +102,18 @@ class MoonPhase(commands.Cog):
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
 		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
 		await ctx.send(embed=embed)
+
+	@commands.hybrid_command(
+		name="geocity",
+		description="Returns the longitude and latitude of the specified city",
+
+	)
+	async def geocity(self,ctx, city):
+		if (coor := self.geobase.get_coordinates(city)) is not None:
+			latitude, longitude = coor
+			await ctx.send(f"The latitude and longitude of {city} are: {latitude}, {longitude}")
+		else:
+			await ctx.send(f"Coordinates not found for {city}. Please check the city name.")
 
 
 async def setup(bot):
