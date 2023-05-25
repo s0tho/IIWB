@@ -13,6 +13,33 @@ from datetime import datetime
 import ephem
 import math
 from typing import List, Tuple
+from discord.ext import commands
+from discord.ui import Button, View
+
+
+class MyView(discord.ui.View):
+	
+	def __init__(self):
+		super().__init__()
+		self.value = None
+
+
+	@discord.ui.button(label='Send Message', style=discord.ButtonStyle.grey)
+	async def yahallo_message(self, interaction: discord.Interaction, button: discord.ui.Button):
+		await interaction.response.send_message('Hello from the button!', ephemeral=True)
+
+
+	@discord.ui.button(label='Update', style=discord.ButtonStyle.grey)
+	async def edit_embed(self, interaction: discord.Interaction, button: discord.ui.Button):
+		current = MoonPhase.get_phase_today() * 100
+		moon = MoonPhase.create_moon_art(current)
+		name = MoonPhase.current_moon_phase_name(current)
+		boussole = MoonPhase.get_compass('49.443383', '1.099273') 
+		embed = discord.Embed(title = "Moon phase", description = f"{MoonPhase.today_print()}", color = 0x0060df)
+		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
+		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
+		await interaction.response.edit_message(embed=embed)
+
 
 class MoonPhase(commands.Cog):
 
@@ -22,7 +49,9 @@ class MoonPhase(commands.Cog):
 		self.defaultCogs = ['reverse.client.default', 'reverse.client.debugger.debugger']
 		self.geobase = IIWBGeopy()
 
-	def create_moon_art(self, phase):
+
+	@staticmethod
+	def create_moon_art(phase):
 		# Define moon symbols for each phase
 		symbols = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘', '🌑']
 		
@@ -33,7 +62,8 @@ class MoonPhase(commands.Cog):
 		return symbols[index]
 
 
-	def get_phase_today(self):
+	@staticmethod
+	def get_phase_today():
 		"""Returns a floating-point number from 0-1. where 0=new, 0.5=full, 1=new"""
 		#Ephem stores its date numbers as floating points, which the following uses
 		#to conveniently extract the percent time between one new moon and the next
@@ -53,7 +83,8 @@ class MoonPhase(commands.Cog):
 		return lunation
 	
 
-	def current_moon_phase_name(self, phase):
+	@staticmethod
+	def current_moon_phase_name(phase):
 		symbols = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Third Quarter', 'Waning Crescent', 'New Moon']
 		
 		index = int(round(phase / 100.0 * 8.0))
@@ -61,12 +92,15 @@ class MoonPhase(commands.Cog):
 		return symbols[index]
 	
 
-	def today_print(self):
+	@staticmethod
+	def today_print():
 		aujourdhui = datetime.now()
 
 		return f"Date et heure actuelles: {aujourdhui.strftime('%d %b %Y %Hh%M')}"
 
-	def get_compass(self, latitude, longitude):
+
+	@staticmethod
+	def get_compass(latitude, longitude):
 		# Création de l'objet d'observateur pour les coordonnées données
 		observer = ephem.Observer()
 		observer.lat = latitude
@@ -86,7 +120,6 @@ class MoonPhase(commands.Cog):
 		# Affichage du résultat
 		return f"Boussole de la Lune :**{moon_compass}** :arrow_upper_right: degrés  "
 
-	print()
 
 	@commands.hybrid_command(
 		name="moon_phase",
@@ -94,14 +127,17 @@ class MoonPhase(commands.Cog):
 
 	)
 	async def ping(self, ctx) -> None:
-		current = self.get_phase_today() * 100
-		moon = self.create_moon_art(current)
-		name = self.current_moon_phase_name(current)
-		boussole = self.get_compass('49.443383', '1.099273')
-		embed = discord.Embed(title = "Moon phase", description = f"{self.today_print()}", color = 0x0060df)
+		current = MoonPhase.get_phase_today() * 100
+		moon = MoonPhase.create_moon_art(current)
+		name = MoonPhase.current_moon_phase_name(current)
+		boussole = MoonPhase.get_compass('49.443383', '1.099273')
+		embed = discord.Embed(title = "Moon phase", description = f"{MoonPhase.today_print()}", color = 0x0060df)
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
 		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
-		await ctx.send(embed=embed)
+		
+		view = MyView()
+		await ctx.send(embed=embed, view=view)
+
 
 	@commands.hybrid_command(
 		name="geocity",
@@ -114,6 +150,15 @@ class MoonPhase(commands.Cog):
 			await ctx.send(f"The latitude and longitude of {city} are: {latitude}, {longitude}")
 		else:
 			await ctx.send(f"Coordinates not found for {city}. Please check the city name.")
+
+
+	#Example embedded message and update using button
+	""" @commands.command()
+	async def yahallo(self, ctx):
+		print("call")
+		embed = discord.Embed(title='Hello!', description='Click the button to send a message.')
+		view = MyView()
+		await ctx.reply(embed=embed, view=view) """
 
 
 async def setup(bot):
