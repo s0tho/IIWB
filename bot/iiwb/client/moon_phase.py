@@ -18,9 +18,9 @@ from discord.ui import Button, View
 
 
 class MyView(discord.ui.View):
-	
+
 	def __init__(self):
-		super().__init__()
+		super().__init__(timeout=None)
 		self.value = None
 
 
@@ -32,10 +32,11 @@ class MyView(discord.ui.View):
 	@discord.ui.button(label='Update', style=discord.ButtonStyle.grey)
 	async def edit_embed(self, interaction: discord.Interaction, button: discord.ui.Button):
 		current = MoonPhase.get_phase_today() * 100
+		city = 'Rouen'
 		moon = MoonPhase.create_moon_art(current)
 		name = MoonPhase.current_moon_phase_name(current)
 		boussole = MoonPhase.get_compass('49.443383', '1.099273') 
-		embed = discord.Embed(title = "Moon phase", description = f"{MoonPhase.today_print()}", color = 0x0060df)
+		embed = discord.Embed(title = "Moon phase", description = f"{MoonPhase.today_print()} et vous êtes dans la ville de **{city}**", color = 0x0060df)
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
 		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
 		await interaction.response.edit_message(embed=embed)
@@ -128,10 +129,11 @@ class MoonPhase(commands.Cog):
 	)
 	async def ping(self, ctx) -> None:
 		current = MoonPhase.get_phase_today() * 100
+		city = 'Rouen'
 		moon = MoonPhase.create_moon_art(current)
 		name = MoonPhase.current_moon_phase_name(current)
-		boussole = MoonPhase.get_compass('49.443383', '1.099273')
-		embed = discord.Embed(title = "Moon phase", description = f"{MoonPhase.today_print()}", color = 0x0060df)
+		boussole = MoonPhase.get_compass('49.4404591', '1.0939658')
+		embed = discord.Embed(title = "Moon phase", description = f"{MoonPhase.today_print()} et vous êtes dans la ville de **{city}**", color = 0x0060df)
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
 		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
 		
