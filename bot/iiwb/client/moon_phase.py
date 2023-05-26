@@ -40,6 +40,11 @@ class MoonPhase(commands.Cog):
 		self.bot = bot
 		self.cogs = utils.listCogs().keys()
 		self.defaultCogs = ['reverse.client.default', 'reverse.client.debugger.debugger']
+		""" self._env = utils.load_backend()
+		try:
+			self.config = utils.load_custom_config('config.json', __file__, path='')
+		except:
+			self.config = None """
 
 
 	@staticmethod
