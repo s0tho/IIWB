@@ -17,7 +17,7 @@ from discord.ext import commands
 from discord.ui import Button, View
 
 
-class MyView(discord.ui.View):
+class ViewMoonPhase(discord.ui.View):
 
 	def __init__(self):
 		super().__init__(timeout=None)
@@ -137,7 +137,7 @@ class MoonPhase(commands.Cog):
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
 		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
 		
-		view = MyView()
+		view = ViewMoonPhase()
 		await ctx.send(embed=embed, view=view)
 
 
@@ -159,7 +159,7 @@ class MoonPhase(commands.Cog):
 	async def yahallo(self, ctx):
 		print("call")
 		embed = discord.Embed(title='Hello!', description='Click the button to send a message.')
-		view = MyView()
+		view = ViewMoonPhase()
 		await ctx.reply(embed=embed, view=view) """
 
 
