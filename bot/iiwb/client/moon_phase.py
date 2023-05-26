@@ -1,20 +1,12 @@
-from typing import Optional
 from discord.ext import commands
 import discord
-from discord import app_commands
-from discord.utils import get
-from iiwb.core._models import Context
 from iiwb.core._service import IIWBGeopy
 from iiwb.core import utils
-import asyncio
-import sys
-import json
 from datetime import datetime
 import ephem
 import math
 from typing import List, Tuple
 from discord.ext import commands
-from discord.ui import Button, View
 
 
 class ViewMoonPhase(discord.ui.View):
@@ -48,7 +40,6 @@ class MoonPhase(commands.Cog):
 		self.bot = bot
 		self.cogs = utils.listCogs().keys()
 		self.defaultCogs = ['reverse.client.default', 'reverse.client.debugger.debugger']
-		self.geobase = IIWBGeopy()
 
 
 	@staticmethod
@@ -147,7 +138,7 @@ class MoonPhase(commands.Cog):
 
 	)
 	async def geocity(self,ctx, city):
-		if (coor := self.geobase.get_coordinates(city)) is not None:
+		if (coor := IIWBGeopy.get_coordinates(city)) is not None:
 			latitude, longitude = coor
 			await ctx.send(f"The latitude and longitude of {city} are: {latitude}, {longitude}")
 		else:
