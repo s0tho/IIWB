@@ -86,6 +86,29 @@ class SqliteService:
         cursor = self._execute(sql)
         self._commit()
         return cursor
+    
+
+    def updation(self, table, columns, insertValues, uid):
+        sql = f"UPDATE {table} SET {columns}='{insertValues}' WHERE id={uid}"
+        print(sql+"self")
+        cur = self.instance.cursor()
+        cur.execute(sql)
+    
+
+    def selection(self, table):
+        cur = self._execute(f'SELECT * FROM {table}')
+        rows = self._fetchAll(cur)
+        print("select")
+        for row in rows:
+            print(row)
+
+    
+    def selectbyid(self, table, column, uid):
+        sql = f"SELECT * FROM {table} WHERE {column}={uid}"
+        cur = self._execute(sql)
+        rows = self._fetchAll(cur)
+        return rows
+
 
     def getEnvSqlite(self):
         return utils.load_backend()['sqlite']
