@@ -175,12 +175,12 @@ class MoonPhase(commands.Cog):
 	async def geocity(self,ctx, city):
 		if (coor := IIWBGeopy.get_coordinates(city)) is not None:
 			latitude, longitude = coor
-			await ctx.send(f"The latitude and longitude of {city} are: {latitude}, {longitude}")
+			await ctx.send(f"La latitude et la longitude de la ville de {city} sont :{latitude}, {longitude}")
 			self.db.insertion('moon_phase', ['id', 'city'], [ctx.author.id, city])
 			self.db.updation('moon_phase', 'city', str(city), ctx.author.id)
 			self.db.selection()
 		else:
-			await ctx.send(f"Coordinates not found for {city}. Please check the city name.")
+			await ctx.send(f"Coordonnées non trouvées pour {city}. Veuillez vérifier le nom de la ville.")
 
 
 	@commands.hybrid_command(
@@ -192,7 +192,7 @@ class MoonPhase(commands.Cog):
 		city = MoonPhase.getcitybyid(self.db, ctx.author.id)
 		
 		if city:
-			await ctx.send(f"Vous êtes inscrit sur le site de la ville de {city}.")
+			await ctx.send(f"Vous êtes inscrit sur la ville de {city}.")
 		else:
 			row = None
 			await ctx.send("Vous n'êtes inscrit nulle part, par défaut à Rouen.")
