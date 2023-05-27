@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from iiwb.core._service import IIWBGeopy
+from iiwb.core._service import IIWBGeopy, SqliteService
 from iiwb.core import utils
 from datetime import datetime
 import ephem
@@ -14,6 +14,7 @@ class ViewMoonPhase(discord.ui.View):
 	def __init__(self):
 		super().__init__(timeout=None)
 		self.value = None
+		self.db = SqliteService('moonphase.db')
 
 
 	@discord.ui.button(label='Send Message', style=discord.ButtonStyle.grey)
@@ -23,11 +24,19 @@ class ViewMoonPhase(discord.ui.View):
 
 	@discord.ui.button(label='Update', style=discord.ButtonStyle.grey)
 	async def edit_embed(self, interaction: discord.Interaction, button: discord.ui.Button):
+		city = MoonPhase.getcitybyid(self.db, interaction.user.id)
+		print(interaction.user.id)
+		print(city)
+		if city is None:
+			city = 'Rouen'
+		
+		if (coor := IIWBGeopy.get_coordinates(city)) is not None:
+			latitude, longitude = coor
+
 		current = MoonPhase.get_phase_today() * 100
-		city = 'Rouen'
 		moon = MoonPhase.create_moon_art(current)
 		name = MoonPhase.current_moon_phase_name(current)
-		boussole = MoonPhase.get_compass('49.443383', '1.099273') 
+		boussole = MoonPhase.get_compass(latitude, longitude) 
 		embed = discord.Embed(title = "Moon phase", description = f"{MoonPhase.today_print()} et vous êtes dans la ville de **{city}**", color = 0x0060df)
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
 		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
@@ -40,6 +49,8 @@ class MoonPhase(commands.Cog):
 		self.bot = bot
 		self.cogs = utils.listCogs().keys()
 		self.defaultCogs = ['reverse.client.default', 'reverse.client.debugger.debugger']
+		self.db = SqliteService('moonphase.db')
+		self.db.createTable('moon_phase', 'id integer PRIMARY KEY, city text')
 		""" self._env = utils.load_backend()
 		try:
 			self.config = utils.load_custom_config('config.json', __file__, path='')
@@ -118,17 +129,36 @@ class MoonPhase(commands.Cog):
 		return f"Boussole de la Lune :**{moon_compass}** :arrow_upper_right: degrés  "
 
 
+	@staticmethod
+	def getcitybyid(instance, id):
+		_uid = id
+		row = instance.selectbyid('moon_phase', 'id', _uid)
+		
+		if len(row) >= 1:
+			row = row[0]
+			uid, city = row
+			return city
+		else:
+			return None
+		
+
 	@commands.hybrid_command(
 		name="moon_phase",
 		description="Return the current moon phase",
 
 	)
-	async def ping(self, ctx) -> None:
+	async def moon_phase(self, ctx) -> None:
 		current = MoonPhase.get_phase_today() * 100
-		city = 'Rouen'
+		city = MoonPhase.getcitybyid(self.db, ctx.author.id)
+		if city is None:
+			city = 'Rouen'
+		
+		if (coor := IIWBGeopy.get_coordinates(city)) is not None:
+			latitude, longitude = coor
+
 		moon = MoonPhase.create_moon_art(current)
 		name = MoonPhase.current_moon_phase_name(current)
-		boussole = MoonPhase.get_compass('49.4404591', '1.0939658')
+		boussole = MoonPhase.get_compass(latitude, longitude)
 		embed = discord.Embed(title = "Moon phase", description = f"{MoonPhase.today_print()} et vous êtes dans la ville de **{city}**", color = 0x0060df)
 		embed.add_field(name=f"{moon}", value=f"{current}%", inline=True)
 		embed.add_field(name=f"", value=f"La lune est dans sa phase\n **{name}** \n {boussole}", inline=True)
@@ -146,8 +176,26 @@ class MoonPhase(commands.Cog):
 		if (coor := IIWBGeopy.get_coordinates(city)) is not None:
 			latitude, longitude = coor
 			await ctx.send(f"The latitude and longitude of {city} are: {latitude}, {longitude}")
+			self.db.insertion('moon_phase', ['id', 'city'], [ctx.author.id, city])
+			self.db.updation('moon_phase', 'city', str(city), ctx.author.id)
+			self.db.selection()
 		else:
 			await ctx.send(f"Coordinates not found for {city}. Please check the city name.")
+
+
+	@commands.hybrid_command(
+		name="wherami",
+		description="Returns the city in which you are registered",
+
+	)
+	async def gfan(self, ctx):
+		city = MoonPhase.getcitybyid(self.db, ctx.author.id)
+		
+		if city:
+			await ctx.send(f"Vous êtes inscrit sur le site de la ville de {city}.")
+		else:
+			row = None
+			await ctx.send("Vous n'êtes inscrit nulle part, par défaut à Rouen.")
 
 
 	#Example embedded message and update using button
