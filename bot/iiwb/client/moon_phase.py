@@ -14,7 +14,6 @@ class ViewMoonPhase(discord.ui.View):
 	def __init__(self):
 		super().__init__(timeout=None)
 		self.value = None
-		self.db = SqliteService('moonphase.db')
 
 
 	@discord.ui.button(label='Send Message', style=discord.ButtonStyle.grey)
@@ -47,14 +46,7 @@ class MoonPhase(commands.Cog):
 		self.bot = bot
 		self.cogs = utils.listCogs().keys()
 		self.defaultCogs = ['reverse.client.default', 'reverse.client.debugger.debugger']
-		self.db = SqliteService('moonphase.db')
-		self.db.createTable('moon_phase', 'id integer PRIMARY KEY, city text')
 		self.b = IIWBapi()
-		""" self._env = utils.load_backend()
-		try:
-			self.config = utils.load_custom_config('config.json', __file__, path='')
-		except:
-			self.config = None """
 
 
 	@staticmethod
@@ -127,18 +119,6 @@ class MoonPhase(commands.Cog):
 		# Affichage du résultat
 		return f"Boussole de la Lune :**{moon_compass}** :arrow_upper_right: degrés  "
 
-
-	@staticmethod
-	def getcitybyid(instance, id):
-		_uid = id
-		row = instance.selectbyid('moon_phase', 'id', _uid)
-		
-		if len(row) >= 1:
-			row = row[0]
-			uid, city = row
-			return city
-		else:
-			return None
 	
 	@staticmethod
 	async def _getcitybyid(id):
@@ -210,32 +190,6 @@ class MoonPhase(commands.Cog):
 		else:
 			await ctx.send("Vous n'êtes inscrit nulle part, par défaut à Rouen.")
 
-
-	@commands.command()
-	async def testapi(self, ctx):
-		j = {
-			"_id": str(ctx.author.id),
-			"city": "Rouen"
-		}
-		b = await self.b.addusermp(j)
-		await ctx.send(b)
-
-	@commands.command()
-	async def testuser(self, ctx):
-		b = await self.b.getuserbyid(ctx.author.id)
-		if(b['_id'] is not None):
-			await ctx.send(b['city'])
-		else:
-			await ctx.send('No document using this id.')
-	
-	@commands.command()
-	async def testcity(self, ctx, city):
-		j = {
-			"_id": str(ctx.author.id),
-			"city": f"{city}"
-		}
-		b = await self.b.updateuser(ctx.author.id, j)
-		print(b)
 
 	#Example embedded message and update using button
 	""" @commands.command()
