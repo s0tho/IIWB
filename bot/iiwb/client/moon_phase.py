@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from iiwb.core._service import IIWBGeopy, SqliteService
+from iiwb.core._service import IIWBGeopy, SqliteService, IIWBapi, Route
 from iiwb.core import utils
 from datetime import datetime
 import ephem
@@ -24,9 +24,7 @@ class ViewMoonPhase(discord.ui.View):
 
 	@discord.ui.button(label='Update', style=discord.ButtonStyle.grey)
 	async def edit_embed(self, interaction: discord.Interaction, button: discord.ui.Button):
-		city = MoonPhase.getcitybyid(self.db, interaction.user.id)
-		print(interaction.user.id)
-		print(city)
+		city = await MoonPhase._getcitybyid(interaction.user.id)
 		if city is None:
 			city = 'Rouen'
 		
@@ -51,6 +49,7 @@ class MoonPhase(commands.Cog):
 		self.defaultCogs = ['reverse.client.default', 'reverse.client.debugger.debugger']
 		self.db = SqliteService('moonphase.db')
 		self.db.createTable('moon_phase', 'id integer PRIMARY KEY, city text')
+		self.b = IIWBapi()
 		""" self._env = utils.load_backend()
 		try:
 			self.config = utils.load_custom_config('config.json', __file__, path='')
@@ -140,6 +139,16 @@ class MoonPhase(commands.Cog):
 			return city
 		else:
 			return None
+	
+	@staticmethod
+	async def _getcitybyid(id):
+		_uid = id
+		b = IIWBapi()
+		b = await b.getuserbyid(_uid)
+		if(b['_id'] is not None):
+			return b['city']
+		else:
+			return None
 		
 
 	@commands.hybrid_command(
@@ -149,7 +158,8 @@ class MoonPhase(commands.Cog):
 	)
 	async def moon_phase(self, ctx) -> None:
 		current = MoonPhase.get_phase_today() * 100
-		city = MoonPhase.getcitybyid(self.db, ctx.author.id)
+		city = await MoonPhase._getcitybyid(ctx.author.id)
+		
 		if city is None:
 			city = 'Rouen'
 		
@@ -176,9 +186,13 @@ class MoonPhase(commands.Cog):
 		if (coor := IIWBGeopy.get_coordinates(city)) is not None:
 			latitude, longitude = coor
 			await ctx.send(f"La latitude et la longitude de la ville de {city} sont :{latitude}, {longitude}")
-			self.db.insertion('moon_phase', ['id', 'city'], [ctx.author.id, city])
-			self.db.updation('moon_phase', 'city', str(city), ctx.author.id)
-			self.db.selection()
+
+			j = {
+				"_id": str(ctx.author.id),
+				"city": f"{city}"
+			}
+			await self.b.addusermp(j)
+			await self.b.updateuser(ctx.author.id, j)
 		else:
 			await ctx.send(f"Coordonnées non trouvées pour {city}. Veuillez vérifier le nom de la ville.")
 
@@ -189,14 +203,39 @@ class MoonPhase(commands.Cog):
 
 	)
 	async def gfan(self, ctx):
-		city = MoonPhase.getcitybyid(self.db, ctx.author.id)
+		city = await MoonPhase._getcitybyid(ctx.author.id)
 		
 		if city:
 			await ctx.send(f"Vous êtes inscrit sur la ville de {city}.")
 		else:
-			row = None
 			await ctx.send("Vous n'êtes inscrit nulle part, par défaut à Rouen.")
 
+
+	@commands.command()
+	async def testapi(self, ctx):
+		j = {
+			"_id": str(ctx.author.id),
+			"city": "Rouen"
+		}
+		b = await self.b.addusermp(j)
+		await ctx.send(b)
+
+	@commands.command()
+	async def testuser(self, ctx):
+		b = await self.b.getuserbyid(ctx.author.id)
+		if(b['_id'] is not None):
+			await ctx.send(b['city'])
+		else:
+			await ctx.send('No document using this id.')
+	
+	@commands.command()
+	async def testcity(self, ctx, city):
+		j = {
+			"_id": str(ctx.author.id),
+			"city": f"{city}"
+		}
+		b = await self.b.updateuser(ctx.author.id, j)
+		print(b)
 
 	#Example embedded message and update using button
 	""" @commands.command()
