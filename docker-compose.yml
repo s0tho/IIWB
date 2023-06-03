@@ -12,12 +12,14 @@ services:
       - ${APP_PORTS}
 
   db:
-    container_name: discord_db
-    image: couchbase:latest
+    image: couchdb:${COUCHDB_IMAGE_TAG}
     ports:
-      - ${COUCHBASE_PORTS}
+      - ${COUCHDB_PORTS}
     volumes:
-      - ${COUCHBASE_DATA_PATH}:/opt/couchbase/var
+      - ${COUCHDB_DATA_PATH}:/opt/couchdb/data
+    environment:
+      - COUCHDB_PASSWORD
+      - COUCHDB_USER
 
   # bot:
   #   container_name: discord_bot
