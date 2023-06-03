@@ -108,6 +108,11 @@ class IIWBapi:
 
 	
 	async def updateuser(self, id, json):
-		r = Route('PUT', f'/v1/userbyid/{id}')
+		r = Route('PUT', f'/v1/userbyidmp/{id}')
+		s = await self.request(r, json=json)
+		return s
+
+	async def addtimer(self, json):
+		r = Route('POST', f'/v1/timemonitor/users')
 		s = await self.request(r, json=json)
 		return s
