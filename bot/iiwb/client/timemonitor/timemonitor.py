@@ -8,6 +8,7 @@ class TimeMonitor(commands.Cog):
 		self.bot = bot
 		self.tempStorage = {}
 		self.storage = {}
+		self.b = 0
 
 
 	@commands.Cog.listener()
@@ -18,7 +19,15 @@ class TimeMonitor(commands.Cog):
 
 			# Start tracking the user's talk time
 			start_time = time.time()
-
+			
+			j = {
+				'userid': str(member.id),
+				'channelid': str(after.channel.id),
+				'duration': 0,
+				'start': start_time,
+				'end': 0
+			}
+			
 			self.tempStorage[member.id] = {after.channel.id: start_time}
 
 			# Store this time
@@ -67,7 +76,20 @@ class TimeMonitor(commands.Cog):
 			#Remove temporary entry
 			print(self.storage)
 			
-			
+	
+	async def insertTimer(self, json):
+		pass	
+	
+	@commands.command()
+	async def transform(self, ctx):
+		{
+			'id': 0,
+			'userid': 123,
+			'channelid': 1234,
+			'duration': 0,
+			'start': 0,
+			'end': 0
+		}
 
 	
 	@commands.command()
