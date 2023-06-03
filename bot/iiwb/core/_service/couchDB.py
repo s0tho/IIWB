@@ -1,6 +1,6 @@
 import logging
 
-class IIWBCouchBase():
+class IIWBCouchDB():
 
 	def __init__(self, name: str) -> None:
 		pass
