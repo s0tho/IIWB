@@ -112,7 +112,20 @@ class IIWBapi:
 		s = await self.request(r, json=json)
 		return s
 
-	async def addtimer(self, json):
+
+	async def adduser_timemonitor(self, json):
 		r = Route('POST', f'/v1/timemonitor/users')
+		s = await self.request(r, json=json)
+		return s
+	
+
+	async def getby_id(self, json):
+		r = Route('POST', f'/v1/timemonitor/getspecific')
+		s = await self.request(r, json=json)
+		return s
+	
+
+	async def updatetimemonitor(self, id, json):
+		r = Route('PUT', f'/v1/timemonitor/users/{id}')
 		s = await self.request(r, json=json)
 		return s
