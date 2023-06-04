@@ -1,4 +1,5 @@
 from discord.ext import commands
+from iiwb.core import IIWBapi
 import time
 import asyncio
 
@@ -8,94 +9,89 @@ class TimeMonitor(commands.Cog):
 		self.bot = bot
 		self.tempStorage = {}
 		self.storage = {}
-		self.b = 0
+		self.b = IIWBapi()
 
 
 	@commands.Cog.listener()
 	async def on_voice_state_update(self, member, before, after):
 		if before.channel is None and after.channel is not None:
-			#Rejoins une channel vocal
+			# Join voicechat
 			print(f'{member.name} joined {after.channel.name}')
 
 			# Start tracking the user's talk time
 			start_time = time.time()
 			
+			# Create dict with user's entry
 			j = {
-				'userid': str(member.id),
-				'channelid': str(after.channel.id),
-				'duration': 0,
-				'start': start_time,
-				'end': 0
+				'userid': f"{member.id}",
+				'status': {
+					'channel': f"{after.channel.id}",
+					'connected': start_time,
+					'disconnected': 0,
+					'duration': 0
+				}
 			}
-			
+
+			# Send and get modified entry
+			j = await self.b.adduser_timemonitor(j)
+			self.storage[j['userid']] = j
 			self.tempStorage[member.id] = {after.channel.id: start_time}
 
-			# Store this time
-			print(self.tempStorage)
-			print(self.storage)
 		if before.channel is not None and after.channel is None:
-			#Quitte le channel existant
-			talk_time = round(time.time() - self.tempStorage[member.id][before.channel.id])
+			# Leave existing voicechat
+			print(f"{member.name} is leaving voice chat.")
+			
+			# Get user's entry
+			_bfore = self.storage[str(member.id)]
+			# Calculate duration
+			_bfore['status']['disconnected'] = time.time()
+			_bfore['status']['duration'] = _bfore['status']['disconnected'] - _bfore['status']['connected']
 
-			if member.id not in self.storage:
-				self.storage[member.id] = {before.channel.id: talk_time}
-			else:
-				if before.channel.id in self.storage[member.id]:
-					self.storage[member.id][before.channel.id] += talk_time
-				else:
-					self.storage[member.id][before.channel.id] = talk_time
+			# Create input and send it
+			input = {
+				'userid': _bfore['userid'],
+				'status': _bfore['status']
+			}
+			res = await self.b.updatetimemonitor(_bfore['_id'], input)
 
-			#Remove temporary entry
-			self.tempStorage.pop(member.id)
-
-			print(f'{member.name} talk time: {talk_time} seconds')
-			print(self.tempStorage)
-			print(self.storage)
 		if before.channel is not None and after.channel is not None:
-			#Changement de channel
+			# Change voicechat
 			print(f"{member.name} changed channel from {before.channel.name} to {after.channel.name}")
 
+			# Store db entry for later
+			_bfore = self.storage[str(member.id)]
+			# Calculate duration of the time spend in VC
+			_bfore['status']['disconnected'] = time.time()
+			_bfore['status']['duration'] = _bfore['status']['disconnected'] - _bfore['status']['connected']
+
+			# Create input with modified entries
+			input = {
+				'userid': _bfore['userid'],
+				'status': _bfore['status']
+			}
+
+			# Update time monitor entry for user
+			res = await self.b.updatetimemonitor(_bfore['_id'], input)
+
+
+			# Create new user for the new channel
+			# Start tracking the user's talk time
 			start_time = time.time()
-			talk_time = round(time.time() - self.tempStorage[member.id][before.channel.id])
-
-			if member.id in self.tempStorage:
-				self.tempStorage[member.id] = {after.channel.id: start_time}
-			else:
-				self.tempStorage[member.id][after.channel.id] = start_time
-
-			print(self.tempStorage)
-
-			if member.id not in self.storage:
-				self.storage[member.id] = {before.channel.id: talk_time}
-			else:
-				if before.channel.id in self.storage[member.id]:
-					self.storage[member.id][before.channel.id] += talk_time
-				else:
-					self.storage[member.id][before.channel.id] = talk_time
-
-			#Remove temporary entry
-			print(self.storage)
 			
-	
-	async def insertTimer(self, json):
-		pass	
-	
-	@commands.command()
-	async def transform(self, ctx):
-		{
-			'id': 0,
-			'userid': 123,
-			'channelid': 1234,
-			'duration': 0,
-			'start': 0,
-			'end': 0
-		}
+			j = {
+				'userid': f"{member.id}",
+				'status': {
+					'channel': f"{after.channel.id}",
+					'connected': start_time,
+					'disconnected': 0,
+					'duration': 0
+				}
+			}
 
-	
-	@commands.command()
-	async def getallrecord(self, ctx):
-		await ctx.send("TEMPORARY : "+str(self.tempStorage))
-		await ctx.send("STORAGE : "+str(self.storage))
+			j = await self.b.adduser_timemonitor(j)
+
+			self.storage[j['userid']] = j
+		
 		
 async def setup(bot):
 	await bot.add_cog(TimeMonitor(bot))
