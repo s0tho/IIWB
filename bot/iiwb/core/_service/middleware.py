@@ -37,9 +37,6 @@ class Route:
 				self.url = url
 		except:
 			pass
-		
-		print(self.url)
-		print(self.BASE)
 
 class IIWBapi:
 	  
