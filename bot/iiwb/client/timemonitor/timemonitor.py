@@ -24,6 +24,7 @@ class TimeMonitor(commands.Cog):
 			# Create dict with user's entry
 			j = {
 				'userid': f"{member.id}",
+				'guildid': f"{member.guild.id}",
 				'status': {
 					'channel': f"{after.channel.id}",
 					'connected': start_time,
@@ -50,6 +51,7 @@ class TimeMonitor(commands.Cog):
 			# Create input and send it
 			input = {
 				'userid': _bfore['userid'],
+				'guildid': _bfore['guildid'],
 				'status': _bfore['status']
 			}
 			res = await self.b.updatetimemonitor(_bfore['_id'], input)
@@ -67,6 +69,7 @@ class TimeMonitor(commands.Cog):
 			# Create input with modified entries
 			input = {
 				'userid': _bfore['userid'],
+				'guildid': _bfore['guildid'],
 				'status': _bfore['status']
 			}
 
@@ -80,6 +83,7 @@ class TimeMonitor(commands.Cog):
 			
 			j = {
 				'userid': f"{member.id}",
+				'guildid': f"{member.guild.id}",
 				'status': {
 					'channel': f"{after.channel.id}",
 					'connected': start_time,
