@@ -337,3 +337,12 @@ def strike(text):
 		Striketrough string
 	"""
 	return ''.join([u'\u0336{}'.format(c) for c in text])
+
+
+
+def existInList(lists, value):
+	_store = 0
+	for row in lists:
+		if(value in lists[row]):
+			_store += 1
+	return _store
