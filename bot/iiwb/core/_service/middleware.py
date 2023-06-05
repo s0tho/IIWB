@@ -126,3 +126,21 @@ class IIWBapi:
 		r = Route('PUT', f'/v1/timemonitor/users/{id}')
 		s = await self.request(r, json=json)
 		return s
+	
+	
+	async def getAllPoll(self):
+		r = Route('GET', f'/v1/poll')
+		s = await self.request(r)
+		return s
+	
+
+	async def insertPoll(self, json):
+		r = Route('POST', f'/v1/poll')
+		s = await self.request(r, json=json)
+		return s
+	
+
+	async def updatePoll(self, id, json):
+		r = Route('PUT', f'/v1/poll/{id}')
+		s = await self.request(r, json=json)
+		return s
