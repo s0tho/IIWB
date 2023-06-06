@@ -62,8 +62,16 @@ class PollButton(discord.ui.Button):
 
 			_tempjson = {f'{str(interaction.message.id)}':{
 				"_id": interaction.message.id,
+				"question": IIWBPoll.POP[str(interaction.message.id)]['question'],
+				"created": IIWBPoll.POP[str(interaction.message.id)]['created'],
+				"finished": IIWBPoll.POP[str(interaction.message.id)]['finished'],
+				"duration": IIWBPoll.POP[str(interaction.message.id)]['duration'],
 				"answer": IIWBPoll.POP[str(interaction.message.id)]['answer'],
-				"total": IIWBPoll.POP[str(interaction.message.id)]['total']
+				"ordered": IIWBPoll.POP[str(interaction.message.id)]['ordered'],
+				"maxVote":  IIWBPoll.POP[str(interaction.message.id)]['maxVote'],
+				"total": IIWBPoll.POP[str(interaction.message.id)]['total'],
+				"_uid": IIWBPoll.POP[str(interaction.message.id)]['_uid'],
+				"_rev": IIWBPoll.POP[str(interaction.message.id)]['_rev']
 			}}
 			
 			print(IIWBPoll.POP[str(interaction.message.id)]['_uid'])
@@ -134,8 +142,16 @@ class ResetButton(discord.ui.Button):
 
 			_tempjson = {f'{str(interaction.message.id)}':{
 				"_id": interaction.message.id,
+				"question": IIWBPoll.POP[str(interaction.message.id)]['question'],
+				"created": IIWBPoll.POP[str(interaction.message.id)]['created'],
+				"finished": IIWBPoll.POP[str(interaction.message.id)]['finished'],
+				"duration": IIWBPoll.POP[str(interaction.message.id)]['duration'],
 				"answer": IIWBPoll.POP[str(interaction.message.id)]['answer'],
-				"total": IIWBPoll.POP[str(interaction.message.id)]['total']
+				"ordered": IIWBPoll.POP[str(interaction.message.id)]['ordered'],
+				"maxVote":  IIWBPoll.POP[str(interaction.message.id)]['maxVote'],
+				"total": IIWBPoll.POP[str(interaction.message.id)]['total'],
+				"_uid": IIWBPoll.POP[str(interaction.message.id)]['_uid'],
+				"_rev": IIWBPoll.POP[str(interaction.message.id)]['_rev']
 			}}
 			
 			
