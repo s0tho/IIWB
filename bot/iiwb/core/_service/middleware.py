@@ -144,3 +144,9 @@ class IIWBapi:
 		r = Route('PUT', f'/v1/poll/{id}')
 		s = await self.request(r, json=json)
 		return s
+	
+
+	async def insertClearRecord(self, json):
+		r = Route('POST', f'/v1/clearlogger')
+		s = await self.request(r, json=json)
+		return s

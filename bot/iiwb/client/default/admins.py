@@ -1,12 +1,14 @@
+import time
 from discord.ext import commands
 import asyncio
-from iiwb.core import utils
+from iiwb.core import utils, IIWBapi
 
 
 class Admins(commands.Cog):
 
 	def __init__(self, bot):
 		self.bot = bot
+		self.b = IIWBapi()
 
 	@commands.hybrid_command(
 		name="clear",
@@ -22,7 +24,24 @@ class Admins(commands.Cog):
 			if(wait > 0):
 				await ctx.send("Removed in {}".format(wait))
 				await asyncio.sleep(wait)
-			async for message in channel.history(limit=amount+1):
+			async for message in channel.history(limit=amount):
+				try:
+					newEntry = {
+						"channel": message.channel.id,
+						"guild": message.guild.id,
+						"type": str(message.type),
+						"message": message.content,
+						"messageid": message.id,
+						"created": time.mktime(message.created_at.timetuple()),
+						"edited": message.edited_at,
+						"deleted": time.time(),
+						"deletor": ctx.author.id,
+						"deletorname": ctx.author.name
+					}
+					pop = await self.b.insertClearRecord(newEntry)
+					print(pop)
+				except Exception as e:
+					print(e)
 				await message.delete()
 			await ctx.send(f"Vous avez supprimé {amount} messages.", ephemeral=True)
 
