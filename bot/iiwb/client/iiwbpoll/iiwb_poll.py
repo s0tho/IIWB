@@ -47,13 +47,16 @@ class PollButton(discord.ui.Button):
 				print(e)
 				
 			# Create field for answer
-			for id, row in enumerate(IIWBPoll.POP[str(interaction.message.id)]['answer'],  1):
-
-				_maths = (len(IIWBPoll.POP[str(interaction.message.id)]['answer'][row]) / IIWBPoll.POP[str(interaction.message.id)]['total'])*100
-				print(_maths)
-				
-				embed.add_field(name=f"N°{id} {row} - {round(_maths, 2)}%", value="", inline=False)
-
+			try:
+				for id, row in enumerate(IIWBPoll.POP[str(interaction.message.id)]['ordered'],  1):
+					
+					print("poollbutton ", id, row)
+					_maths = (len(IIWBPoll.POP[str(interaction.message.id)]['answer'][row]) / IIWBPoll.POP[str(interaction.message.id)]['total'])*100
+					print(_maths)
+					
+					embed.add_field(name=f"N°{id} {row} - {round(_maths, 2)}%", value="", inline=False)
+			except Exception as e:
+				print(e)
 				
 			embed.add_field(name=f"Vote total : {IIWBPoll.POP[str(interaction.message.id)]['total']}", value="", inline=False)
 
@@ -117,10 +120,9 @@ class ResetButton(discord.ui.Button):
 			print('letsgo')
 			
 			# Create field for answer
-			for id, row in enumerate(IIWBPoll.POP[str(interaction.message.id)]['answer'],  1):
+			for id, row in enumerate(IIWBPoll.POP[str(interaction.message.id)]['ordered'],  1):
 				#print(row)
 				print("+1", id, row, IIWBPoll.POP[str(interaction.message.id)]['answer'][row])
-				print()
 				if(IIWBPoll.POP[str(interaction.message.id)]['total'] <= 0):
 					_maths = (len(IIWBPoll.POP[str(interaction.message.id)]['answer'][row]) / 1)*100
 				else:
@@ -162,8 +164,11 @@ class IIWBPoll(commands.Cog):
 		self.b = IIWBapi()
 
 
-	@commands.command()
-	async def gfan(self, ctx, question, first, second, third = '0', fourth = '0', fifth = '0', duration = 10, maxVote=1):
+	@commands.hybrid_command(
+		name="poller",
+		description="Create a poll",
+	)
+	async def gfan(self, ctx, question, first, second, third='0', fourth='0', fifth='0', duration=10, maxvote=1):
 		
 		args = {
 			"first": first,
@@ -178,29 +183,37 @@ class IIWBPoll(commands.Cog):
 		embed = discord.Embed(title = "Poll", description = f"{question}", color = 0x0060df)
 		_args = {}
 		_items = {}
-		_itemtovote = {}
+		from collections import OrderedDict
+		_itemtovote = OrderedDict()
+		_itemset = []
 		i=1
-		for key, value in args.items():
+		for id, (key, value) in enumerate(args.items(), 1):
 			print(key, value)
 			if(value == None or value == 0 or value == '0'):
 				print(f"Entry {key} empty - {value}")
 			else:
-				_itemtovote.update({
-					f"{value}": []
-				})
-				view.add_item(PollButton(id=value, label=key, style=discord.ButtonStyle.blurple))
-				embed.add_field(name=f"N°{i} {value} - 0%", value="", inline=False)
-				_args.update({
-					f"{key}": 0
-				})
+				_itemtovote.update({str(value): []})
+				_itemset.append(str(value))
+				
+				_args[key] = 0
 				_items[key] = value
 			i += 1
 		
-		view.add_item(ResetButton(id="Reset", label="Reset", style=discord.ButtonStyle.red))
+		try:
+			for id, value in enumerate(_itemset, 1):
+				view.add_item(PollButton(id=value, label=id, style=discord.ButtonStyle.blurple))
+				embed.add_field(name=f"N°{id} {value} - 0%", value="", inline=False)
 
+			view.add_item(ResetButton(id="Reset", label="Reset", style=discord.ButtonStyle.red))
+		except Exception as e:
+			print(e)
+		
 		_storage = await ctx.send(embed=embed, view=view)
+		print("value")
 		print(_itemtovote)
 		print(_storage)
+		print("value")
+		print(_itemset)
 		
 		IIWBPoll.STORAGE[_storage.id] = {
 			"message": _storage,
@@ -217,13 +230,15 @@ class IIWBPoll(commands.Cog):
 			"question": question,
 			"created": start_time,
 			"finished": (start_time + (duration * 60)),
+			"duration": duration,
 			"answer": _itemtovote,
-			"maxVote": maxVote,
+			"ordered": _itemset,
+			"maxVote": maxvote,
 			"total": 0
 		}}
 
 
-		a = await self.insertPoll(_tempjson)
+		a = await self.b.insertPoll(_tempjson)
 		print(f'Incroyable{a}')
 		a[f'{_storage.id}']['_uid'] = a['_id']
 		a[f'{_storage.id}']['_rev'] = a['_rev']
@@ -231,12 +246,7 @@ class IIWBPoll(commands.Cog):
 		print("POP value")
 		print(IIWBPoll.POP)
 
-	async def insertPoll(self, json):
-		a = await self.b.insertPoll(json)
-		return a
 	
-	@commands.command()
-	async def citypoll(self, ctx):
-		await ctx.send('Yay')
+
 async def setup(bot):
 	await bot.add_cog(IIWBPoll(bot))
