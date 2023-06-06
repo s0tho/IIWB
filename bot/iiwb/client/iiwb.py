@@ -74,7 +74,7 @@ class Reverse():
 		return command
 
 	async def on_ready(self):
-		self.client.sync(guild=discord.Object(id=906604286270656522))
+		self.client.sync(guild=discord.Object(id=1101948059270791318))
 		print('We have logged in as {0.user}'.format(self.getClient()))
 		
 	async def on_message(self, message):
