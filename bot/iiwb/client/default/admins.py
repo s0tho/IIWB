@@ -39,7 +39,6 @@ class Admins(commands.Cog):
 						"deletorname": ctx.author.name
 					}
 					pop = await self.b.insertClearRecord(newEntry)
-					print(pop)
 				except Exception as e:
 					print(e)
 				await message.delete()
