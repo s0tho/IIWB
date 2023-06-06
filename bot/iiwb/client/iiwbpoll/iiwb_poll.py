@@ -14,8 +14,21 @@ class PollButton(discord.ui.Button):
 		self.style = style
 		self.b = IIWBapi()
 
+	def howManyTimeUserVoted(list, value):
+		nvote = utils.existInList(list, value)
+		return nvote
+
 	async def callback(self, interaction: discord.Interaction):
-		# 
+		try:
+			nvote = PollButton.howManyTimeUserVoted(IIWBPoll.POP[str(interaction.message.id)]['answer'], str(interaction.user.id))
+			masVote = IIWBPoll.POP[str(interaction.message.id)]['maxVote']
+			if(nvote <= 0):
+				print(f"Never voted {nvote}")
+			elif(nvote >= masVote):
+				await interaction.response.send_message(f'You already voted! Voted:{nvote}, Max vote:{masVote}', ephemeral=True)
+
+		except Exception as e:
+			print(e)
 		try:
 			if(not str(interaction.user.id) in IIWBPoll.POP[str(interaction.message.id)]['answer'][self.value]):
 				IIWBPoll.POP[str(interaction.message.id)]['answer'][self.value].append(f'{interaction.user.id}')
@@ -34,14 +47,6 @@ class PollButton(discord.ui.Button):
 					print(row)
 					print(IIWBPoll.POP[str(interaction.message.id)]['answer'][row])
 					print(f"STOP"+str(str(interaction.message.id)) in IIWBPoll.POP[str(interaction.message.id)]['answer'][row])
-					if(str(str(interaction.message.id)) in IIWBPoll.POP[str(interaction.message.id)]['answer'][row]):
-						_vote += 1 
-						if(_vote > IIWBPoll.POP[str(interaction.message.id)]['maxVote']):
-							await interaction.response.send_message('You already voted!', ephemeral=True)
-							return
-							
-						if(_vote < IIWBPoll.POP[str(interaction.message.id)]['maxVote']):
-							print("Still more vote to go")
 							
 			except Exception as e:
 				print(e)
