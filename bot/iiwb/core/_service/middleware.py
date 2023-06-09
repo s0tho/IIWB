@@ -150,3 +150,18 @@ class IIWBapi:
 		r = Route('POST', f'/v1/clearlogger')
 		s = await self.request(r, json=json)
 		return s
+	
+	async def insertMessageLogger(self, json):
+		r = Route('POST', f'/v1/messagelogger')
+		s = await self.request(r, json=json)
+		return s
+	
+	async def insertExperienceStore(self, json, id):
+		r = Route('POST', f'/v1/expstore/{id}')
+		s = await self.request(r, json=json)
+		return s
+	
+	async def updateExperienceStore(self, json, id):
+		r = Route('PUT', f'/v1/expstore/{id}')
+		s = await self.request(r, json=json)
+		return s

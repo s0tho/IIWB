@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import utils as ut
 import discord
 import asyncio
+import random
 import time
 from iiwb.core import utils, IIWBapi
 
@@ -12,6 +13,8 @@ class messageLogger(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.b = IIWBapi()
+		self._expstore = {}
+		self._temp = []
 
 	@commands.Cog.listener()
 	async def on_message(self, message):
@@ -34,15 +37,37 @@ class messageLogger(commands.Cog):
 			for i in utils.getObjectsAttr(message.attachments, "url"):
 				_attach.append(i)
 			_res["attachments"] = _attach
+		
+		await self.b.insertMessageLogger(_res)
+		await self.insertexpstore(_res, message)
 
 
-		if(message.edited_at != None):
-			_res["edited_at"] = time.mktime(message.edited_at.timetuple()),
+	async def insertexpstore(self, _json, message):
+		try:
+			data = [{
+						"number_msg": 0,
+						"last_exp": 0,
+						"nen": 0,
+						"userid": str(_json['author'])
+					}]
 
-		_rep = await self.b.insertMessageLogger(_res)
-		print(_rep)
+			rave = await self.b.insertExperienceStore(data[0], str(_json['author']))
+			""" self._expstore[_userid] = rave """
+			self._expstore[str(_json['author'])] = rave
+			print(self._expstore[str(_json['author'])])
+			self._expstore[str(_json['author'])][0]['number_msg'] += 1
+
+			if((self._expstore[str(_json['author'])][0]['number_msg'] - self._expstore[str(_json['author'])][0]['last_exp']) >= 5):
+				print("5 or more")
+				self._expstore[str(_json['author'])][0]['last_exp'] = self._expstore[str(_json['author'])][0]['number_msg']
+				self._expstore[str(_json['author'])][0]['nen'] += random.randint(15, 25)
+
+			await self.b.updateExperienceStore(self._expstore[str(_json['author'])][0], self._expstore[str(_json['author'])][0]['_id'])
 
 
+		except Exception as e:
+			print(e)
+		
 
 async def setup(bot):
 	await bot.add_cog(messageLogger(bot))
