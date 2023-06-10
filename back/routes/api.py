@@ -16,6 +16,7 @@ api = Blueprint('api', __name__)
         }
     }
 })
+
 def infos():
     """
     1 liner about the route
