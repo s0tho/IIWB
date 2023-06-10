@@ -43,31 +43,27 @@ class messageLogger(commands.Cog):
 
 
 	async def insertexpstore(self, _json, message):
-		try:
-			data = [{
-						"number_msg": 0,
-						"last_exp": 0,
-						"nen": 0,
-						"userid": str(_json['author'])
-					}]
+	
+		data = [{
+					"number_msg": 0,
+					"last_exp": 0,
+					"nen": 0,
+					"userid": str(_json['author'])
+				}]
 
-			rave = await self.b.insertExperienceStore(data[0], str(_json['author']))
-			""" self._expstore[_userid] = rave """
-			self._expstore[str(_json['author'])] = rave
-			print(self._expstore[str(_json['author'])])
-			self._expstore[str(_json['author'])][0]['number_msg'] += 1
+		rave = await self.b.insertExperienceStore(data[0], str(_json['author']))
+		""" self._expstore[_userid] = rave """
+		self._expstore[str(_json['author'])] = rave
+		print(self._expstore[str(_json['author'])])
+		self._expstore[str(_json['author'])][0]['number_msg'] += 1
 
-			if((self._expstore[str(_json['author'])][0]['number_msg'] - self._expstore[str(_json['author'])][0]['last_exp']) >= 5):
-				print("5 or more")
-				self._expstore[str(_json['author'])][0]['last_exp'] = self._expstore[str(_json['author'])][0]['number_msg']
-				self._expstore[str(_json['author'])][0]['nen'] += random.randint(15, 25)
+		if((self._expstore[str(_json['author'])][0]['number_msg'] - self._expstore[str(_json['author'])][0]['last_exp']) >= 5):
+			print("5 or more")
+			self._expstore[str(_json['author'])][0]['last_exp'] = self._expstore[str(_json['author'])][0]['number_msg']
+			self._expstore[str(_json['author'])][0]['nen'] += random.randint(15, 25)
 
-			await self.b.updateExperienceStore(self._expstore[str(_json['author'])][0], self._expstore[str(_json['author'])][0]['_id'])
+		await self.b.updateExperienceStore(self._expstore[str(_json['author'])][0], self._expstore[str(_json['author'])][0]['_id'])
 
-
-		except Exception as e:
-			print(e)
-		
 
 async def setup(bot):
 	await bot.add_cog(messageLogger(bot))
