@@ -104,9 +104,6 @@ class TimeMonitor(commands.Cog):
     async def insertexpstore(self, _json, duration):
         try:
             self._expstore = {}
-            print("POST RAVE")
-            print(_json)
-            print(duration)
             data = [{
                         "number_msg": 0,
                         "last_exp": 0,
@@ -116,15 +113,10 @@ class TimeMonitor(commands.Cog):
                     }]
 
             rave = await self.b.insertExperienceStore(data[0], str(_json['author']))
-            """ self._expstore[_userid] = rave """
             self._expstore[str(_json['author'])] = rave
 
             if(not 'vcmonitor' in  self._expstore[str(_json['author'])][0]):
-                print("DOESN EXXIST")
-                self._expstore[str(_json['author'])][0]['vcmonitor'] = 0
-            print('RAVE')
-            print(self._expstore[str(_json['author'])])
-            
+                self._expstore[str(_json['author'])][0]['vcmonitor'] = 0            
 
             randomflag = int(duration / 30)
 
@@ -132,7 +124,7 @@ class TimeMonitor(commands.Cog):
                 self._expstore[str(_json['author'])][0]['nen'] += random.randint(15, 25)
         
             self._expstore[str(_json['author'])][0]['vcmonitor'] += int(duration)
-            print(self._expstore[str(_json['author'])])
+            print(f"Voice : {self._expstore[str(_json['author'])]}")
             await self.b.updateExperienceStore(self._expstore[str(_json['author'])][0], self._expstore[str(_json['author'])][0]['_id'])
         except Exception as e:
             # importing module

@@ -54,7 +54,7 @@ class messageLogger(commands.Cog):
 		rave = await self.b.insertExperienceStore(data[0], str(_json['author']))
 		""" self._expstore[_userid] = rave """
 		self._expstore[str(_json['author'])] = rave
-		print(self._expstore[str(_json['author'])])
+		print(f"Message : {self._expstore[str(_json['author'])]}")
 		self._expstore[str(_json['author'])][0]['number_msg'] += 1
 
 		if((self._expstore[str(_json['author'])][0]['number_msg'] - self._expstore[str(_json['author'])][0]['last_exp']) >= 5):
