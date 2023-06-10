@@ -28,6 +28,10 @@ class Database:
     def getuserbyid(self,table="users"):
         return self.db[table]
 
+    def write_userinfo(self, json):
+        db = self.inst['users']
+        return db.save(json)
+    
     def get_timemonitor_by_id(self, id):
         return self.db['timemonitor'].find({'userid': id})
 
@@ -39,5 +43,20 @@ class Database:
 
     def write_timemonitor(self, json):
         db = self.inst['timemonitor']
-        print(json)
-        db.save(json)
+        return db.save(json)
+
+    def write_poll(self, json):
+        db = self.inst['poll']
+        return db.save(json)
+    
+    def write_clearlogger(self, json):
+        db = self.inst['clearlogger']
+        return db.save(json)
+    
+    def write_messagelogger(self, json):
+        db = self.inst['messagelogger']
+        return db.save(json)
+    
+    def write_experiencelogger(self, json):
+        db = self.inst['expstore']
+        return db.save(json)
