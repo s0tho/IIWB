@@ -7,6 +7,7 @@ import random
 import time
 from iiwb.core import utils, IIWBapi
 
+__version__ = '0.1.5'
 
 class messageLogger(commands.Cog):
 
@@ -48,6 +49,7 @@ class messageLogger(commands.Cog):
 					"number_msg": 0,
 					"last_exp": 0,
 					"nen": 0,
+					"vcmonitor": 0,
 					"userid": str(_json['author'])
 				}]
 
