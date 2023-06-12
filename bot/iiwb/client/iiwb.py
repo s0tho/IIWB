@@ -7,10 +7,10 @@ from iiwb.core import utils, ReverseLogger
 import random
 from discord.utils import get
 
-__title__ = 'IIWB'
+__title__ = 'I.I.W.B.'
 __author__ = 'Hveodrungr'
 __copyright__ = 'Copyright 2015-2023 Sacrezar'
-__codename__ = 'I.I.W.B.'
+__codename__ = 'Eclipse'
 __fullcodename__ = 'If I Were a (discord) Bot'
 __version__ = '0.1.0'
 
