@@ -12,7 +12,7 @@ __author__ = 'Hveodrungr'
 __copyright__ = 'Copyright 2015-2023 Sacrezar'
 __codename__ = 'I.I.W.B.'
 __fullcodename__ = 'If I Were a (discord) Bot'
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 
 class Reverse():
 
