@@ -6,6 +6,8 @@ import asyncio
 import sys
 import json
 
+__version__ = '0.9.0'
+
 class Core(commands.Cog):
 
 	def __init__(self, bot):
