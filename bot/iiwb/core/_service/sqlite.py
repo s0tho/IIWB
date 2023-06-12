@@ -2,6 +2,9 @@ import sqlite3
 import json
 from iiwb.core import utils
 
+
+__version__ = '0.5.2'
+
 class SqliteService:
     
     __slots__ = [
