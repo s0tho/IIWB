@@ -12,6 +12,7 @@ class Admins(commands.Cog):
 		self.bot = bot
 		self.b = IIWBapi()
 
+
 	@commands.hybrid_command(
 		name="bestclear",
 		description="Delete x messages.",
@@ -110,6 +111,7 @@ class Admins(commands.Cog):
 					
 			await ctx.send(f"Vous avez supprimé {_count} messages. contre: {member}, limit: {limit}", ephemeral=True)
 
+
 	@commands.hybrid_command(
 		name="bulkclear",
 		description="Delete x messages.",
@@ -119,7 +121,7 @@ class Admins(commands.Cog):
 		member = await ctx.guild.fetch_member(int(_userid))
 		_returnstr = []
 		_count = 0
-		if(await utils.specifiedRole("Cleaner", guild, author, ctx=ctx)):
+		if(await utils.specifiedRole("Cleaner", ctx.guild, member, ctx=ctx)):
 			for channel in ctx.guild.channels:
 				if(isinstance(channel, discord.TextChannel)):
 					async for message in channel.history(limit=int(limit)):
