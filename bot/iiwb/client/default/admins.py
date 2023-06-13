@@ -13,7 +13,28 @@ class Admins(commands.Cog):
 		self.b = IIWBapi()
 
 	@commands.hybrid_command(
-		name="clear",
+		name="bestclear",
+		description="Delete x messages.",
+	)
+	async def bestclear(self, ctx, limit: int = 10, user: str = None, channel: str = None, bulk: bool = False):
+		_amount = limit
+		_target = user
+		_channeltargeted = channel
+		_bulk = bulk
+		if( _target is not None and _bulk):
+			print("call bulk")
+			await self.clearbulk(ctx, _target, limit=_amount)
+		elif( _target is not None and _channeltargeted is not None):
+			print("call clearl")
+			await self.clearl(ctx, channel=_channeltargeted, user=_target, limit=_amount)
+		else:
+			print("call clear")
+			await self.clear(ctx, amount=_amount, wait=0)
+		pass
+
+
+	@commands.hybrid_command(
+		name="simpleclear",
 		description="Delete x messages.",
 	)
 	async def clear(self, ctx, amount: int, wait: int = 0):
@@ -50,8 +71,8 @@ class Admins(commands.Cog):
 	
 
 	@commands.hybrid_command(
-		name="clearl",
-		description="Delete x messages.",
+		name="focusclear",
+		description="Delete x messages from specific user",
 	)
 	async def clearl(self, ctx, channel: str, user: str, limit: int = 10):
 		_channelid = channel[2:-1]
