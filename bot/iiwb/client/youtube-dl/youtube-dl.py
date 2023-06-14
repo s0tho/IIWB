@@ -124,7 +124,9 @@ class youtubeDL(commands.Cog):
 			await ctx.send('Now playing: {}'.format(player.title))
 		except Exception as e:
 			print(e)
-
+			if(str(e) == "Already playing audio."):
+				print("ADD TO PLAYLIST")
+			
 
 async def setup(bot):
 	await bot.add_cog(youtubeDL(bot))
