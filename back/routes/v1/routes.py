@@ -301,3 +301,58 @@ def updateExpStore(id):
 			"_id": None
 		}
 	return value
+
+
+@api.route('/plotdf/<id>', methods=['GET'])
+def getDataFrame(id):
+	dbe = db.inst['timemonitor']
+	mango = {
+		"selector": {
+				"userid": str(id)
+			},
+		"fields": [
+				"status.connected",
+				"status.duration"
+			],
+		"sort": [
+				{
+					"status.connected": "asc"
+				}
+			]
+		}
+			
+	value = {
+		"time": [],
+		"duration": []
+	}
+	for row in dbe.find(mango):
+		""" value.append(row) """
+		_time = row['status']['connected']
+		_duration = row['status']['duration']
+		value['time'].append(str(_time))
+		value['duration'].append(_duration)
+	
+	return value
+
+
+
+@api.route('/plot/<id>', methods=['GET'])
+def seabornplot(id):
+	import pandas as pd
+	import matplotlib.pyplot as plt
+	import seaborn as sns
+
+	value =getDataFrame(id)
+
+	df = pd.DataFrame(value)
+
+	df['time'] = pd.to_datetime(df['time'], unit='s').dt.strftime("%d/%m/%Y %H:%M:%S")
+
+
+	fig, ax = plt.subplots(figsize=(16, 8))
+	sns.lineplot(x="time", y="duration",
+				data=df)
+	plt.title('Time in seconds', fontsize=16)
+	plt.savefig('foo.png')
+
+	return {"error": 404}
