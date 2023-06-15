@@ -64,6 +64,8 @@ class youtubeDL(commands.Cog):
 		self.room = []
 		self.voicechannel = None
 		self._basechannel = None
+		self.playlist = []
+		self.player = None
 		
 
 	@commands.hybrid_command(
@@ -120,13 +122,30 @@ class youtubeDL(commands.Cog):
 		"""Streams from a url (same as yt, but doesn't predownload)"""
 		try:
 			player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
-			ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+			self.player = player
+			ctx.voice_client.play(player, after=lambda e: self.pstream(ctx, "e"))
 			await ctx.send('Now playing: {}'.format(player.title))
 		except Exception as e:
 			print(e)
 			if(str(e) == "Already playing audio."):
 				print("ADD TO PLAYLIST")
-			
+				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
+				await ctx.send(f"Adding to playlist : {player.title}")
+				self.playlist.append(url)
+
+	def pstream(self, ctx, url):
+		try:
+			if(self.voicechannel.is_playing()):
+				print("already playing")
+				return
+			if(len(self.playlist) <= 0):
+				asyncio.run_coroutine_threadsafe(ctx.send("No more songs in queue."), self.bot.loop)
+				return
+			_url = self.playlist[0]
+			asyncio.run_coroutine_threadsafe(self.stream(ctx, _url), self.bot.loop)
+			del self.playlist[0]
+		except Exception as e:
+			print(e)
 
 async def setup(bot):
 	await bot.add_cog(youtubeDL(bot))
