@@ -341,12 +341,18 @@ def seabornplot(id):
 	import pandas as pd
 	import matplotlib.pyplot as plt
 	import seaborn as sns
+	import numpy as np
 
 	value =getDataFrame(id)
 
 	df = pd.DataFrame(value)
 
+	""" df = df['time'].T.reset_index(drop=True)  # transpose dataframe """
+	df = df.reindex(df.index.union(np.linspace(df.index.min(),df.index.max(), df.index.shape[0]*10))).reset_index(drop=True)  # insert 10 "empty" points between existing ones
+	df = df.interpolate('pchip', order=2)   # fill the gaps with values
+
 	df['time'] = pd.to_datetime(df['time'], unit='s').dt.strftime("%d/%m/%Y %H:%M:%S")
+
 
 
 	fig, ax = plt.subplots(figsize=(16, 8))
