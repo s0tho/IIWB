@@ -343,17 +343,18 @@ def seabornplot(id):
 	import seaborn as sns
 	import numpy as np
 
-	value =getDataFrame(id)
+	value = getDataFrame(id)
 
 	df = pd.DataFrame(value)
 
-	""" df = df['time'].T.reset_index(drop=True)  # transpose dataframe """
+	for row, value in df['time'].items():
+		df['time'][row] = int(float(value))
+		df['duration'][row] = int(float(df['duration'][row]))
+
 	df = df.reindex(df.index.union(np.linspace(df.index.min(),df.index.max(), df.index.shape[0]*10))).reset_index(drop=True)  # insert 10 "empty" points between existing ones
 	df = df.interpolate('pchip', order=2)   # fill the gaps with values
 
 	df['time'] = pd.to_datetime(df['time'], unit='s').dt.strftime("%d/%m/%Y %H:%M:%S")
-
-
 
 	fig, ax = plt.subplots(figsize=(16, 8))
 	sns.lineplot(x="time", y="duration",
@@ -361,40 +362,7 @@ def seabornplot(id):
 	plt.title('Time in seconds', fontsize=16)
 	plt.savefig('foo.png')
 
-	return {"error": 404} """
-
-	from scipy.interpolate import interp1d
-
-	df1 = pd.DataFrame()
-	df1['Weight_A'] = df['duration'][0:6]
-	df1['Weight_B'] = [65, 60,  55 ,54,0,0,0]
-	df1['Weight_C'] = [88, 70,  65 ,64,0,0,0]
-	_a = []
-	for row in df['time']:
-		_a.append(row)
-	df1.index = df['time'][0:6]
-	#return {'value': _a}
-	f1 = interp1d(df.index, df['duration'],kind='cubic')
-	""" f2 = interp1d(df1.index, df1['Weight_B'],kind='cubic')
-	f3 = interp1d(df1.index, df1['Weight_C'],kind='cubic') """
-
-	df2 = pd.DataFrame()
-	new_index = np.arange(0,7)
-	df2['Weight_A'] = f1(new_index)
-	""" df2['Weight_B'] = f2(new_index)
-	df2['Weight_C'] = f3(new_index) """
-	df2.index = new_index
-
-	ax2 = df2.plot.line()
-	ax2.set_title('After interpolation')
-	ax2.set_xlabel("year")
-	ax2.set_ylabel("weight")
-
-
-	plt.savefig('2foo.png')
-
-	return {'error': 200}
-
+	return {"error": 200}
 
 
 @api.route('/sss/<id>', methods=['GET'])
@@ -405,19 +373,28 @@ def triples(id):
 	import numpy as np
 
 
-	value =getDataFrame(id)
+	value = getDataFrame(id)
 
 	df = pd.DataFrame(value)
 
+	df['medium'] = df.duration.rolling(3).mean()
+
 	plt.figure(figsize=(12, 5))
-	sns.lineplot(x = "Time",
+	sns.lineplot(x = "time",
 	      y= 'duration',
 		  data=df,
-		  label= "daily")
+		  label="time")
+	sns.lineplot(x='time',
+	      y='medium',
+		  data=df,
+		  label='medium')
 
 	plt.xlabel('time per x')
 
 	plt.xticks(df['time'])
 	plt.ylabel('Duration per y')
+	
 
 	plt.savefig('3foo.png')
+
+	return {'error': 200}
