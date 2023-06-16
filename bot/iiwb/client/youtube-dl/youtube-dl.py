@@ -149,5 +149,19 @@ class youtubeDL(commands.Cog):
 		except Exception as e:
 			print(e)
 
+	@commands.hybrid_command(
+		name="ytplaylist",
+		description="Send playlist of YTDL bot.",
+	)
+	async def playlistytdl(self, ctx):
+		try:
+			_li = "Playlist (I.I.W.B.) : \n"
+			for i, row in enumerate(self.playlist, 0):
+				player = await YTDLSource.from_url(row, loop=self.bot.loop, stream=True)
+				_li += f"**N°{i}** {player.title}\n"
+			await ctx.send(_li)
+		except Exception as e:
+			print(e)
+
 async def setup(bot):
 	await bot.add_cog(youtubeDL(bot))
