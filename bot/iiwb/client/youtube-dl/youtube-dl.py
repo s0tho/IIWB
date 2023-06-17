@@ -163,5 +163,17 @@ class youtubeDL(commands.Cog):
 		except Exception as e:
 			print(e)
 
+	@commands.hybrid_command(
+		name="resume",
+		description="Resume stream."
+	)
+	async def ytdlresume(self, ctx):
+		if(len(self.playlist) >= 1):
+			player = await YTDLSource.from_url(self.playlist[0], loop=self.bot.loop, stream=True)
+			self.player = player
+			ctx.voice_client.play(player, after=lambda e: self.pstream(ctx, "e"))
+			await ctx.send('Now playing: {}'.format(player.title))
+		else:
+			print("Playlist empty")
 async def setup(bot):
 	await bot.add_cog(youtubeDL(bot))
