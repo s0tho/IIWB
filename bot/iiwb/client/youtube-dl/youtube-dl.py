@@ -177,6 +177,13 @@ class youtubeDL(commands.Cog):
 			print("Playlist empty")
 	
 	@commands.hybrid_command(
+		name="skipyt",
+		description="Skip current song."
+	)
+	async def ytdlskip(self, ctx):
+		ctx.voice_client.stop()
+
+	@commands.hybrid_command(
 		name="stopyt",
 		description="Stop current played video."
 	)
