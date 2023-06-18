@@ -117,7 +117,7 @@ class youtubeDL(commands.Cog):
 		
 	
 	@commands.hybrid_command(
-		name="stream",
+		name="streamyt",
 		description="Start stream of youtube link.",
 	)
 	async def stream(self, ctx, url):
@@ -150,7 +150,7 @@ class youtubeDL(commands.Cog):
 			print(e)
 
 	@commands.hybrid_command(
-		name="ytplaylist",
+		name="playlistyt",
 		description="Send playlist of YTDL bot.",
 	)
 	async def playlistytdl(self, ctx):
@@ -164,7 +164,7 @@ class youtubeDL(commands.Cog):
 			print(e)
 
 	@commands.hybrid_command(
-		name="resume",
+		name="resumeyt",
 		description="Resume stream."
 	)
 	async def ytdlresume(self, ctx):
@@ -175,5 +175,21 @@ class youtubeDL(commands.Cog):
 			await ctx.send('Now playing: {}'.format(player.title))
 		else:
 			print("Playlist empty")
+	
+	@commands.hybrid_command(
+		name="stopyt",
+		description="Stop current played video."
+	)
+	async def ytdlstop(self, ctx):
+		await ctx.voice_client.disconnect()
+
+	@commands.hybrid_command(
+		name="clearyt",
+		description="Stop current played video."
+	)
+	async def ytdlclear(self, ctx):
+		await ctx.voice_client.disconnect()
+		self.playlist = []
+
 async def setup(bot):
 	await bot.add_cog(youtubeDL(bot))
