@@ -67,7 +67,9 @@ class youtubeDL(commands.Cog):
 		self.voicechannel = None
 		self._basechannel = None
 		self.playlist = []
+		self.is_playing = False
 		self.player = None
+		self.intent_playing = False
 		
 
 	@commands.hybrid_command(
@@ -127,6 +129,8 @@ class youtubeDL(commands.Cog):
 			self.player = player
 			ctx.voice_client.play(player, after=lambda e: self.pstream(ctx, "e"))
 			await ctx.send('Now playing: {}'.format(player.title))
+			self.is_playing = True
+			self.intent_playing = True
 		except Exception as e:
 			print(e)
 			if(str(e) == "Already playing audio."):
@@ -137,15 +141,16 @@ class youtubeDL(commands.Cog):
 
 	def pstream(self, ctx, url):
 		try:
-			if(self.voicechannel.is_playing()):
+			if(self.voicechannel.is_playing() and self.is_playing):
 				print("already playing")
 				return
 			if(len(self.playlist) <= 0):
 				asyncio.run_coroutine_threadsafe(ctx.send("No more songs in queue."), self.bot.loop)
 				return
-			_url = self.playlist[0]
-			asyncio.run_coroutine_threadsafe(self.stream(ctx, _url), self.bot.loop)
-			del self.playlist[0]
+			if(self.intent_playing):
+				_url = self.playlist[0]
+				asyncio.run_coroutine_threadsafe(self.stream(ctx, _url), self.bot.loop)
+				del self.playlist[0]
 		except Exception as e:
 			print(e)
 
@@ -173,6 +178,9 @@ class youtubeDL(commands.Cog):
 			self.player = player
 			ctx.voice_client.play(player, after=lambda e: self.pstream(ctx, "e"))
 			await ctx.send('Now playing: {}'.format(player.title))
+			del self.playlist[0]
+			self.is_playing = True
+			self.intent_playing = True
 		else:
 			print("Playlist empty")
 	
@@ -181,13 +189,15 @@ class youtubeDL(commands.Cog):
 		description="Skip current song."
 	)
 	async def ytdlskip(self, ctx):
-		ctx.voice_client.stop()
+		await ctx.voice_client.stop()
 
 	@commands.hybrid_command(
 		name="stopyt",
 		description="Stop current played video."
 	)
 	async def ytdlstop(self, ctx):
+		self.is_playing = False
+		self.intent_playing = False
 		await ctx.voice_client.disconnect()
 
 	@commands.hybrid_command(
@@ -195,6 +205,8 @@ class youtubeDL(commands.Cog):
 		description="Stop current played video."
 	)
 	async def ytdlclear(self, ctx):
+		self.is_playing = False
+		self.intent_playing = False
 		await ctx.voice_client.disconnect()
 		self.playlist = []
 
