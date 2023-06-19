@@ -304,22 +304,26 @@ def updateExpStore(id):
 
 
 @api.route('/plotdf/<id>', methods=['GET'])
-def getDataFrame(id):
+def getDataFrame(id, start:int = 0, end:int = 9999999999999):
 	dbe = db.inst['timemonitor']
 	mango = {
 		"selector": {
-				"userid": str(id)
-			},
+			"userid": str(id),
+			"status.connected": {
+				"$lt": end,
+				"$gt": start
+			}
+		},
 		"fields": [
-				"status.connected",
-				"status.duration"
-			],
+			"status.connected",
+			"status.duration"
+		],
 		"sort": [
-				{
-					"status.connected": "asc"
-				}
-			]
-		}
+			{
+				"status.connected": "desc"
+			}
+		]
+	}
 			
 	value = {
 		"time": [],
@@ -347,22 +351,22 @@ def seabornplot(id):
 
 	df = pd.DataFrame(value)
 
-	size = 20
+	""" size = 20
 
 	date_range = pd.date_range(start='2022-01-01', periods=size, freq='D')
 	timestamps_ms = date_range.astype(int) // 10**6
 	df = pd.DataFrame({'time': timestamps_ms,
-                   'duration': np.random.randint(0, 60, size=size)})
+                   'duration': np.random.randint(0, 60, size=size)}) """
 
-	""" for row, value in df['time'].items():
+	for row, value in df['time'].items():
 		df['time'][row] = int(float(value))
 		df['duration'][row] = int(float(df['duration'][row]))
-		if(df['duration'][row] == 0):
-			df['duration'][row] = np.random.randint(1, 60)
+		""" if(df['duration'][row] == 0):
+			df['duration'][row] = np.random.randint(30, 60)
 			print("delete row") """
 	
-	df = df.reindex(df.index.union(np.linspace(df.index.min(),df.index.max(), df.index.shape[0]*10))).reset_index(drop=True)  # insert 10 "empty" points between existing ones
-	df = df.interpolate('pchip', order=2)   # fill the gaps with values
+	""" df = df.reindex(df.index.union(np.linspace(df.index.min(),df.index.max(), df.index.shape[0]*10))).reset_index(drop=True)  # insert 10 "empty" points between existing ones
+	df = df.interpolate('pchip', order=2)   # fill the gaps with values """
 
 	#df['time'] = pd.to_datetime(df['time'], unit='s').dt.strftime("%d/%m/%Y %H:%M:%S")
 
