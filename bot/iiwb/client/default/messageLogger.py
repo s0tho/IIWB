@@ -20,10 +20,10 @@ class messageLogger(commands.Cog):
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		_res = {
-			"id": message.id,
-			"channelid": message.channel.id,
-			"author": message.author.id,
-			"guildid": message.guild.id,
+			"id": str(message.id),
+			"channelid": str(message.channel.id),
+			"author": str(message.author.id),
+			"guildid": str(message.guild.id),
 			"content": message.content,
 			"created_at": time.mktime(message.created_at.timetuple()),
 			"mention_everyone": message.mention_everyone,
