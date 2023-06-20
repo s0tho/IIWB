@@ -51,18 +51,18 @@ class Admins(commands.Cog):
 			async for message in channel.history(limit=amount):
 				try:
 					newEntry = {
-							"author": message.author.id,
+							"author": str(message.author.id),
 							"authorname": message.author.name,
-							"channel": message.channel.id,
-							"guild": message.guild.id,
+							"channel": str(message.channel.id),
+							"guild": str(message.guild.id),
 							"type": str(message.type),
 							"message": message.content,
-							"messageid": message.id,
+							"messageid": str(message.id),
 							"created": time.mktime(message.created_at.timetuple()),
 							"edited": message.edited_at,
 							"deleted": time.time(),
-							"deletor": ctx.author.id,
-							"deletorname": ctx.author.name
+							"deletor": str(ctx.author.id),
+							"deletorname": str(ctx.author.name)
 						}
 					pop = await self.b.insertClearRecord(newEntry)
 				except Exception as e:
@@ -91,18 +91,18 @@ class Admins(commands.Cog):
 					try:
 						print(message)
 						newEntry = {
-									"author": message.author.id,
-									"authorname": message.author.name,
-									"channel": message.channel.id,
-									"guild": message.guild.id,
+									"author": str(message.author.id),
+									"authorname": str(message.author.name),
+									"channel": str(message.channel.id),
+									"guild": str(message.guild.id),
 									"type": str(message.type),
 									"message": message.content,
-									"messageid": message.id,
+									"messageid": str(message.id),
 									"created": time.mktime(message.created_at.timetuple()),
 									"edited": message.edited_at,
 									"deleted": time.time(),
-									"deletor": ctx.author.id,
-									"deletorname": ctx.author.name
+									"deletor": str(ctx.author.id),
+									"deletorname": str(ctx.author.name)
 								}
 						pop = await self.b.insertClearRecord(newEntry)
 					except Exception as e:
@@ -128,18 +128,18 @@ class Admins(commands.Cog):
 						if message.author.id == _userid:
 							try:
 								newEntry = {
-											"author": message.author.id,
+											"author": str(message.author.id),
 											"authorname": message.author.name,
-											"channel": message.channel.id,
-											"guild": message.guild.id,
+											"channel": str(message.channel.id),
+											"guild": str(message.guild.id),
 											"type": str(message.type),
 											"message": message.content,
-											"messageid": message.id,
+											"messageid": str(message.id),
 											"created": time.mktime(message.created_at.timetuple()),
 											"edited": message.edited_at,
 											"deleted": time.time(),
-											"deletor": ctx.author.id,
-											"deletorname": ctx.author.name
+											"deletor": str(ctx.author.id),
+											"deletorname": str(ctx.author.name)
 										}
 								pop = await self.b.insertClearRecord(newEntry)
 							except Exception as e:
