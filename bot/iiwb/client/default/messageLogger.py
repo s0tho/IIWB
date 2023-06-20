@@ -30,7 +30,7 @@ class messageLogger(commands.Cog):
 			"pinned": message.pinned,
 			"position": message.position,
 			"attachments": message.attachments,
-			"webhook_id": message.webhook_id
+			"webhook_id": str(message.webhook_id)
 		}
 		
 		if(message.attachments != []):
