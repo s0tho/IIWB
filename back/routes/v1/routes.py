@@ -304,14 +304,15 @@ def updateExpStore(id):
 
 
 @api.route('/plotdf/<id>', methods=['GET'])
-def getDataFrame(id, start:int = 0, end:int = 9999999999999):
+def getTimeMonitorDataFrame(id, lt:int = 9999999999999, gt:int = 0):
+	import time
 	dbe = db.inst['timemonitor']
 	mango = {
 		"selector": {
 			"userid": str(id),
 			"status.connected": {
-				"$lt": end,
-				"$gt": start
+				"$lt": lt,
+				"$gt": gt
 			}
 		},
 		"fields": [
@@ -335,9 +336,30 @@ def getDataFrame(id, start:int = 0, end:int = 9999999999999):
 		_duration = row['status']['duration']
 		value['time'].append(str(_time))
 		value['duration'].append(_duration)
+	value['time'].insert(0, (str(time.time()+86400.0)))
+	value['duration'].insert(0, 0.0)
 	
 	return value
 
+@api.route('/plotmessagedf/<id>', methods=['GET'])
+def getMessageLoggerDataFrame(id, start:int = 0, end:int = 9999999999999):
+	dbe = db.inst['messagelogger']
+	mango =	{
+			"selector": {}
+		}
+	try:
+		for row in dbe.find(mango):
+			row['author'] = str(row['author'])
+			row['channelid'] = str(row['channelid'])
+			row['guildid'] = str(row['guildid'])
+			dbe.save(doc=row)
+			
+	except Exception() as e:
+		value = {
+			"_id": None
+		}
+		print(e)
+	return value
 
 
 @api.route('/plot/<id>', methods=['GET'])
@@ -346,10 +368,16 @@ def seabornplot(id):
 	import matplotlib.pyplot as plt
 	import seaborn as sns
 	import numpy as np
+	import time
 
-	value = getDataFrame(id)
+	_cutime = int(request.args.get('lt', int(time.time())))
+	_gttime = int(request.args.get('gt', int(time.time() - (86400*7))))
+
+	value = getTimeMonitorDataFrame(id, lt=_cutime, gt=_gttime)
 
 	df = pd.DataFrame(value)
+	""" df['time'].append(f"{time.time()}")
+	df['duration'].append(0.0) """
 
 	""" size = 20
 
@@ -361,23 +389,47 @@ def seabornplot(id):
 	for row, value in df['time'].items():
 		df['time'][row] = int(float(value))
 		df['duration'][row] = int(float(df['duration'][row]))
-		""" if(df['duration'][row] == 0):
+
+	
+	""" if(df['duration'][row] == 0):
 			df['duration'][row] = np.random.randint(30, 60)
 			print("delete row") """
 	
-	""" df = df.reindex(df.index.union(np.linspace(df.index.min(),df.index.max(), df.index.shape[0]*10))).reset_index(drop=True)  # insert 10 "empty" points between existing ones
-	df = df.interpolate('pchip', order=2)   # fill the gaps with values """
+	df = df.reindex(df.index.union(np.linspace(df.index.min(),df.index.max(), df.time.shape[0]*2))).reset_index(drop=True) # insert 10 "empty" points between existing ones
+	#df = df.interpolate('pchip', order=2)   # fill the gaps with values
 
-	#df['time'] = pd.to_datetime(df['time'], unit='s').dt.strftime("%d/%m/%Y %H:%M:%S")
+	df = df.fillna(0)
 
-	fig, ax = plt.subplots(figsize=(16, 8))
+	_tmp = 0
+	_row = 0
+	for row, value in df['time'].items():
+		if(value != 0):
+			_row = row
+			_tmp = value
+		else:
+			df['time'][row] = (_tmp - 3600)
+			_tmp = (_tmp - 3600)
+
+
+		
+	df['time'] = df.time.rolling(window=3).mean()
+	
+	
+
+	df['time'] = pd.to_datetime(df['time'], unit='s').dt.strftime("%d/%m/%Y %H:00")
+	""" df_moyenne_jour = df.groupby('time')['duration'].mean().reset_index() """
+
+	
+
+	fig, ax = plt.subplots(figsize=(16, 8))	
 	sns.lineplot(x="time", y="duration",
-				data=df)
+				data=df.iloc[::-1])
 	plt.title('Time in seconds', fontsize=16)
 	plt.savefig('foo.png')
 
-	return {"error": 200}
-
+	""" return {"error": 200, "value": _cutime, "value2": _gttime, df.to_json()}
+ """
+	return df.iloc[::-1].to_json()
 
 @api.route('/sss/<id>', methods=['GET'])
 def triples(id):
@@ -387,17 +439,16 @@ def triples(id):
 	import numpy as np
 
 
-	value = getDataFrame(id)
+	value = getTimeMonitorDataFrame(id)
 
 	df = pd.DataFrame(value)
 
 	df['medium'] = df.duration.rolling(3).mean()
 
+	df = df.drop('duration', axis=1)
+
+
 	plt.figure(figsize=(12, 5))
-	sns.lineplot(x = "time",
-	      y= 'duration',
-		  data=df,
-		  label="time")
 	sns.lineplot(x='time',
 	      y='medium',
 		  data=df,
