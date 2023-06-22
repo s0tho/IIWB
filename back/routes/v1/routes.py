@@ -342,23 +342,29 @@ def getTimeMonitorDataFrame(id, lt:int = 9999999999999, gt:int = 0):
 	return value
 
 @api.route('/plotmessagedf/<id>', methods=['GET'])
-def getMessageLoggerDataFrame(id, start:int = 0, end:int = 9999999999999):
+def getMessageLoggerDataFrame(id, lt:int = 9999999999999, gt:int = 0):
 	dbe = db.inst['messagelogger']
-	mango =	{
-			"selector": {}
+	mango ={
+		"selector": {
+			"author": str(id),
+			"created_at": {
+					"$gt": gt,
+					"$lt": lt
+				}
+			}
 		}
-	try:
-		for row in dbe.find(mango):
-			row['author'] = str(row['author'])
-			row['channelid'] = str(row['channelid'])
-			row['guildid'] = str(row['guildid'])
-			dbe.save(doc=row)
+	value = {
+		"time": [],
+		"message": []
+	}
+	_row = 0
+	for row in dbe.find(mango):
+		value['time'].append(row['created_at'])
+		value['message'].append(1)
+		_row = row['created_at']
+	value['time'].append(_row+3600)
+	value['message'].append(0)
 			
-	except Exception() as e:
-		value = {
-			"_id": None
-		}
-		print(e)
 	return value
 
 
@@ -437,22 +443,47 @@ def triples(id):
 	import matplotlib.pyplot as plt
 	import seaborn as sns
 	import numpy as np
+	import time
 
-
-	value = getTimeMonitorDataFrame(id)
+	_cutime = int(request.args.get('lt', int(time.time())))
+	_gttime = int(request.args.get('gt', int(time.time() - (86400*30))))
+	value = getMessageLoggerDataFrame(id, _cutime, _gttime)
 
 	df = pd.DataFrame(value)
 
-	df['medium'] = df.duration.rolling(3).mean()
+	for row, value in df['time'].items():
+		df['time'][row] = int(float(value))
 
-	df = df.drop('duration', axis=1)
+	df = df.reindex(df.index.union(np.linspace(df.index.min(),df.index.max(), df.time.shape[0]*2))).reset_index(drop=True)
 
 
-	plt.figure(figsize=(12, 5))
+	df = df.fillna(0)
+
+	_tmp = 0
+	_row = 0
+	for row, value in df['time'].items():
+		if(value != 0):
+			_row = row
+			_tmp = value
+		else:
+			df['time'][row] = (_tmp - 3600)
+			_tmp = (_tmp - 3600)
+
+
+
+	_value = df['time'][0]
+	df.loc[-1] = [(_value-3600), 0]
+	df.index = df.index + 1
+	df = df.sort_index() 
+
+
+	df['time'] = pd.to_datetime(df['time'], unit='s').dt.strftime("%d/%m/%Y %H:00")
+
+	plt.figure(figsize=(16, 5))
 	sns.lineplot(x='time',
-	      y='medium',
-		  data=df,
-		  label='medium')
+	      y='message',
+		  data=df.iloc[::-1],
+		  label='message')
 
 	plt.xlabel('time per x')
 
@@ -462,4 +493,4 @@ def triples(id):
 
 	plt.savefig('3foo.png')
 
-	return {'error': 200}
+	return df.to_json()
