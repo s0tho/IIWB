@@ -165,3 +165,8 @@ class IIWBapi:
 		r = Route('PUT', f'/v1/expstore/{id}')
 		s = await self.request(r, json=json)
 		return s
+
+	async def getLevelInfo(self, lvl):
+		r = Route('GET', f'/v1/level/{lvl}')
+		s = await self.request(r)
+		return s
