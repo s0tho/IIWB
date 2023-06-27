@@ -24,16 +24,16 @@ class Core(commands.Cog):
 		ctx = Context(ctx)
 		_kwargs, _args = utils.parse_args(args)
 		data = {}
-		self.cogs = utils.listCogs().keys()
+		self.cogs = utils.listCogs(filterIn={'on', 'off'})
 		
 		if("time" in _kwargs):
 			time = int(_kwargs['time'])
 		else:
 			time = 0
 		
-		
-		for cog in self.cogs:
-			data[cog] = 'on'
+	
+		for cog, value in self.cogs.items():
+			data[cog] = str(value)
 		with open('cogs.json', 'w') as outfile:
 			json.dump({**data, **_kwargs}, outfile)
 		
