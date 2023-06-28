@@ -1,6 +1,8 @@
 from geopy.geocoders import Nominatim
 
 
+__version__ = '1.0.0'
+
 class IIWBGeopy():
 
 	def __init__(self) -> None:

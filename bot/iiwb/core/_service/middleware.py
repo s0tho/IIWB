@@ -7,7 +7,7 @@ import aiohttp
 #from reverse import __version__
 
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 
 async def json_or_text(response):
@@ -164,4 +164,9 @@ class IIWBapi:
 	async def updateExperienceStore(self, json, id):
 		r = Route('PUT', f'/v1/expstore/{id}')
 		s = await self.request(r, json=json)
+		return s
+
+	async def getLevelInfo(self, lvl):
+		r = Route('GET', f'/v1/level/{lvl}')
+		s = await self.request(r)
 		return s
