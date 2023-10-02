@@ -6,6 +6,8 @@ from discord import app_commands
 from discord import __version__ as dversion
 import asyncio
 import sys
+import signal
+import time
 
 class Bot(Reverse):
 	
@@ -34,6 +36,13 @@ class Bot(Reverse):
 	async def run(self, token: str, status: str = "starting"):
 		await super().run(token=token)
 		print("{} successfully".format(status))
+
+	def handler(signum, frame):
+		res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
+		if res == 'y':
+			exit(1)
+
+	signal.signal(signal.SIGINT, handler)
 	
 	async def isShutingdown(self):
 		return self.isShutingdown
