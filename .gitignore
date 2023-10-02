@@ -187,3 +187,7 @@ yarn-error.log*
 
 run1.py
 bot/run1.py
+
+
+/bridge
+/bot/docs
