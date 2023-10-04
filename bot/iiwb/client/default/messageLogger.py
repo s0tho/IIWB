@@ -7,6 +7,7 @@ import random
 import time
 from iiwb.core import utils, IIWBapi
 
+__version__ = '0.1.5'
 
 class messageLogger(commands.Cog):
 
@@ -19,17 +20,17 @@ class messageLogger(commands.Cog):
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		_res = {
-			"id": message.id,
-			"channelid": message.channel.id,
-			"author": message.author.id,
-			"guildid": message.guild.id,
+			"id": str(message.id),
+			"channelid": str(message.channel.id),
+			"author": str(message.author.id),
+			"guildid": str(message.guild.id),
 			"content": message.content,
 			"created_at": time.mktime(message.created_at.timetuple()),
 			"mention_everyone": message.mention_everyone,
 			"pinned": message.pinned,
 			"position": message.position,
 			"attachments": message.attachments,
-			"webhook_id": message.webhook_id
+			"webhook_id": str(message.webhook_id)
 		}
 		
 		if(message.attachments != []):
@@ -48,6 +49,7 @@ class messageLogger(commands.Cog):
 					"number_msg": 0,
 					"last_exp": 0,
 					"nen": 0,
+					"vcmonitor": 0,
 					"userid": str(_json['author'])
 				}]
 
