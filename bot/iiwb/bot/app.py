@@ -85,7 +85,9 @@ class Bot(Reverse):
 	signal.signal(signal.SIGINT, handler)
 	
 	async def isShutingdown(self):
-		"""Check if bot is shutting down"""
+		"""
+		Check if the object is in the process of shutting down.
+		"""
 		return self.isShutingdown
 				
 		
