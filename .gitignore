@@ -191,3 +191,5 @@ bot/run1.py
 
 /bridge
 /bot/docs
+
+ngrok.exe
