@@ -1,1 +1,1 @@
-python .\Engine.py "TOKEN" "starting"
+python .\Engine.py "starting"
