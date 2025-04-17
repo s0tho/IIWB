@@ -193,3 +193,6 @@ bot/run1.py
 /bot/docs
 
 ngrok.exe
+
+_env.py
+bot/iiwb/_env.py
