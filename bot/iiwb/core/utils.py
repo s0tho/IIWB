@@ -7,7 +7,7 @@ from iiwb.core._models import Role
 
 utils_open = partial(open, encoding="UTF-8")
 
-def _load_config(name) -> json:
+def _load_config(name) -> dict:
 	"""Open file from default config folder and return a corresponding JSON object.
 
 	Parameters

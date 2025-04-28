@@ -1,5 +1,7 @@
 import logging
 
+__version__ = '0.1.0'
+
 class ReverseLogger(logging.Logger):
 
 	__slots__ = [

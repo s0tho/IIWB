@@ -4,6 +4,8 @@ from iiwb.core import IIWBapi
 import time
 import asyncio
 
+__version__ = '0.5.0'
+
 class TimeMonitor(commands.Cog):
     
     def __init__(self, bot):

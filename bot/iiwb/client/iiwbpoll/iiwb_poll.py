@@ -5,6 +5,8 @@ import time
 import asyncio
 
 
+__version__ = '0.1.0'
+
 class PollButton(discord.ui.Button):
 
 	def __init__(self, id, label, style):

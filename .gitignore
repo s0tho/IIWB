@@ -187,3 +187,12 @@ yarn-error.log*
 
 run1.py
 bot/run1.py
+
+
+/bridge
+/bot/docs
+
+ngrok.exe
+
+_env.py
+bot/iiwb/_env.py

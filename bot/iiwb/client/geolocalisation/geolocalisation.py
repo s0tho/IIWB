@@ -8,6 +8,7 @@ import math
 from typing import List, Tuple
 from discord.ext import commands
 
+__version__ = '1.0.0'
 
 class ViewMoonPhase(discord.ui.View):
 
@@ -198,7 +199,6 @@ class MoonPhase(commands.Cog):
 		embed = discord.Embed(title='Hello!', description='Click the button to send a message.')
 		view = ViewMoonPhase()
 		await ctx.reply(embed=embed, view=view) """
-
 
 async def setup(bot):
 	await bot.add_cog(MoonPhase(bot))
